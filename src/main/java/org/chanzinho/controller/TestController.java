@@ -1,6 +1,5 @@
 package org.chanzinho.controller;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -43,7 +42,7 @@ public class TestController {
 			teste.setTeste2(teste2);
 			map.put("teste", teste);
 			
-			Template tmp = cfg.getTemplate("test.ftlh");
+			Template tmp = cfg.getTemplate("fragments/global_board_header.ftlh");
 			
 			OutputStream stream = new FileOutputStream("resources/test.html", false);
 			Writer out = new OutputStreamWriter(stream);

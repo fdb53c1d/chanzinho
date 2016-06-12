@@ -37,10 +37,13 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 			tmp.process(root, out);
 			out.close();
 		} catch(FileNotFoundException e) {
+			e.printStackTrace();
 			throw new ChanzinhoException("Erro ao processar template, arquivo nao encontrado.");
 		} catch(IOException e) {
+			e.printStackTrace();
 			throw new ChanzinhoException("Erro de leitura/escrita ao processar template.");
 		} catch(TemplateException e) {
+			e.printStackTrace();
 			throw new ChanzinhoException("Erro ao processar template.");
 		}
 	}

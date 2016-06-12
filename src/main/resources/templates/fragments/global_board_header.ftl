@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <title>${board.name}</title>
-<link rel="shortcut icon" href="${cwebpath}/assets/favicon.png" />
+<link rel="shortcut icon" href="${cwebpath}assets/favicon.png" />
 
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="cache-control" content="no-cache" />

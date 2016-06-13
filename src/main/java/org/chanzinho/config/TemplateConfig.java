@@ -17,7 +17,7 @@ public class TemplateConfig {
 	@PostConstruct
 	public void init() {
 		try{
-			cfg = new freemarker.template.Configuration();
+			cfg = new freemarker.template.Configuration(freemarker.template.Configuration.VERSION_2_3_23);
 			cfg.setDirectoryForTemplateLoading(new File("src/main/resources/templates"));
 			cfg.setDefaultEncoding("UTF-8");
 			cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.chanzinho.exception.ChanzinhoException;
-import org.chanzinho.model.Boards;
+import org.chanzinho.model.Board;
 import org.chanzinho.service.TemplateProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -29,7 +29,7 @@ public class TemplateController {
 	public String processTemplate() {
 		Map<String, Object> root = new HashMap<String, Object>();
 		
-		Boards board = new Boards();
+		Board board = new Board();
 		board.setName("b");
 		board.setDesc("aleatorio");
 		board.setImage("");
@@ -39,8 +39,8 @@ public class TemplateController {
 		styles.add("style1");
 		styles.add("lena");
 		styles.add("burichan");
-		List<List<Boards>> boardlist = new ArrayList<List<Boards>>();
-		List<Boards> section = new ArrayList<Boards>();
+		List<List<Board>> boardlist = new ArrayList<List<Board>>();
+		List<Board> section = new ArrayList<Board>();
 		section.add(board);
 		boardlist.add(section);
 		

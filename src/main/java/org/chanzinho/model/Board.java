@@ -3,75 +3,75 @@ package org.chanzinho.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-//@Entity
-//@Table(name="PREFIX_boards")
-public class Boards {
+@Entity
+@Table(name="boards")
+public class Board {
 	
-	//@Id
-	//@GeneratedValue(strategy=GenerationType.SEQUENCE)
+	@Id
+	@GeneratedValue
 	private Integer id;
-	//@Column(name="order")
+	@Column(name="order")
 	private Integer order;
-	//@Column(name="name")
+	@Column(name="name")
 	private String name;
-	//@Column(name="type")
+	@Column(name="type")
 	private Integer type;
-	//@Column(name="start")
+	@Column(name="start")
 	private Integer start;
-	//@Column(name="uploadtype")
+	@Column(name="uploadtype")
 	private Integer uploadType;
-	//@Column(name="desc")
+	@Column(name="desc")
 	private String desc;
-	//@Column(name="image")
+	@Column(name="image")
 	private String image;
-	//@Column(name="section")
+	@Column(name="section")
 	private Integer section;
-	//@Column(name="maximagasize")
+	@Column(name="maximagesize")
 	private Integer maxImageSize;
-	//@Column(name="maxpages")
+	@Column(name="maxpages")
 	private Integer maxPages;
-	//@Column(name="maxage")
+	@Column(name="maxage")
 	private Integer maxAge;
-	//@Column(name="markpage")
+	@Column(name="markpage")
 	private Integer markPage;
-	//@Column(name="maxreplies")
+	@Column(name="maxreplies")
 	private Integer maxReplies;
-	//@Column(name="messagelength")
+	@Column(name="messagelength")
 	private Integer messageLength;
-	//@Column(name="createdon")
+	@Column(name="createdon")
 	private Integer createdOn;
-	//@Column(name="locked")
+	@Column(name="locked")
 	private Integer locked;
-	//@Column(name="includeheader")
+	@Column(name="includeheader")
 	private String includeHeader;
-	//@Column(name="redirecttothread")
+	@Column(name="redirecttothread")
 	private Integer redirectToThread;
-	//@Column(name="anonymous")
+	@Column(name="anonymous")
 	private String anonymous;
-	//@Column(name="forcedanon")
+	@Column(name="forcedanon")
 	private Integer forcedAnon;
-	//@Column(name="embeds_allowed")
+	@Column(name="embeds_allowed")
 	private String embedsAllowed;
-	//@Column(name="trial")
+	@Column(name="trial")
 	private Integer trial;
-	//@Column(name="popular")
+	@Column(name="popular")
 	private Integer popular;
-	//@Column(name="defaultstyle")
+	@Column(name="defaultstyle")
 	private String defaultStyle;
-	//@Column(name="locale")
+	@Column(name="locale")
 	private String locale;
-	//@Column(name="showid")
+	@Column(name="showid")
 	private Integer showId;
-	//@Column(name="compactlist")
+	@Column(name="compactlist")
 	private Integer compactList;
-	//@Column(name="enablereporting")
+	@Column(name="enablereporting")
 	private Integer enableReporting;
-	//@Column(name="enablecaptcha")
+	@Column(name="enablecaptcha")
 	private Integer enableCaptcha;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -251,6 +251,18 @@ public class Boards {
 	}
 	public void setEnableCaptcha(Integer enableCaptcha) {
 		this.enableCaptcha = enableCaptcha;
+	}
+	@Override
+	public String toString() {
+		return "Board [id=" + id + ", order=" + order + ", name=" + name + ", type=" + type + ", start=" + start
+				+ ", uploadType=" + uploadType + ", desc=" + desc + ", image=" + image + ", section=" + section
+				+ ", maxImageSize=" + maxImageSize + ", maxPages=" + maxPages + ", maxAge=" + maxAge + ", markPage="
+				+ markPage + ", maxReplies=" + maxReplies + ", messageLength=" + messageLength + ", createdOn="
+				+ createdOn + ", locked=" + locked + ", includeHeader=" + includeHeader + ", redirectToThread="
+				+ redirectToThread + ", anonymous=" + anonymous + ", forcedAnon=" + forcedAnon + ", embedsAllowed="
+				+ embedsAllowed + ", trial=" + trial + ", popular=" + popular + ", defaultStyle=" + defaultStyle
+				+ ", locale=" + locale + ", showId=" + showId + ", compactList=" + compactList + ", enableReporting="
+				+ enableReporting + ", enableCaptcha=" + enableCaptcha + "]";
 	}
 	
 	

@@ -16,7 +16,7 @@ public class Post {
 	@Column(name="boardid")
 	private Integer boardId;
 	@Column(name="parentid")
-	private Integer parentId;
+	private Long parentId;
 	@Column(name="name")
 	private String name;
 	@Column(name="tripcode")
@@ -84,10 +84,10 @@ public class Post {
 	public void setBoardId(Integer boardId) {
 		this.boardId = boardId;
 	}
-	public Integer getParentId() {
+	public Long getParentId() {
 		return parentId;
 	}
-	public void setParentId(Integer parentId) {
+	public void setParentId(Long parentId) {
 		this.parentId = parentId;
 	}
 	public String getName() {

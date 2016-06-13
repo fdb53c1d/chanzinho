@@ -1,0 +1,95 @@
+html {
+  font-family: arial, helivetica, sans-serif;
+  font-size: 10pt;
+}
+
+nav ul::before {
+  content: "[ ";
+}
+
+nav ul::after {
+  content: " ]";
+}
+
+nav ul li:not(:last-child)::after {
+  content: " / ";
+}
+
+nav ul li {
+  display: inline;
+}
+
+nav ul {
+  padding-left: 7px;
+  display: inline-block;
+}
+
+.navright {
+  float: right;
+}
+
+header {
+  text-align: center;
+}
+
+.formarea table {
+  margin-left:auto; 
+  margin-right:auto;
+}
+
+summary {
+  text-align: center;
+}
+
+figure {
+  float: left;
+  margin: 10px;
+}
+
+.postinfo {
+  white-space: nowrap;
+  padding: 4px;
+}
+
+.reply {
+  border: 0.5px solid black;
+  display: table;
+  margin: 10px;
+}
+
+.postarea {
+  display: table;
+}
+
+article {
+  clear: both;
+  margin: 10px;
+  margin-top: 20px;
+}
+.postarea hr {
+  clear: both;
+}
+.bottom ul {
+  padding-left: 7px;
+  display: inline-block;
+}
+
+.bottom ul li {
+  display: inline;
+}
+
+.bottom ul li::after {
+  content: "]"
+}
+
+.bottom ul li::before {
+  content: "["
+}
+
+footer {
+  text-align: center;
+}
+
+.message {
+  padding-left: 20px;
+}

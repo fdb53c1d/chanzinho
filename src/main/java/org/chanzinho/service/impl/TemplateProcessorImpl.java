@@ -31,7 +31,7 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 		try{
 			Configuration cfg = templateConfig.getConfig();
 			Template tmp = cfg.getTemplate(templateFile);
-			OutputStream stream = new FileOutputStream(outputFile);
+			OutputStream stream = new FileOutputStream(outputFile, false);
 			Writer out = new OutputStreamWriter(stream);
 			
 			tmp.process(root, out);

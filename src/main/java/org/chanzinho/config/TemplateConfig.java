@@ -21,6 +21,7 @@ public class TemplateConfig {
 			cfg.setDirectoryForTemplateLoading(new File("src/main/resources/templates"));
 			cfg.setDefaultEncoding("UTF-8");
 			cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
+			cfg.setAPIBuiltinEnabled(true);
 		} catch(IOException e) {
 			
 		}

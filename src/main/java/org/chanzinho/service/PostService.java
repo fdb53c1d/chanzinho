@@ -9,6 +9,8 @@ public interface PostService {
 
 	Post findById(Long id);
 	
+	Post save(Post post);
+	
 	List<Post> findOpsByBoardIdAndPageIndex(Integer boardId, Integer index);
 	
 	List<Post> findLastPostsByBoardAndThreadId(Integer postCount, Integer boardId, Long threadId);

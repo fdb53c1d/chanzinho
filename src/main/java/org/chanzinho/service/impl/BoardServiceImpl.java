@@ -24,6 +24,10 @@ public class BoardServiceImpl implements BoardService {
 		return boardRepository.findById(id);
 	}
 	
+	public Board findByName(String name) {
+		return boardRepository.findByName(name);
+	}
+	
 	public Map<Section, List<Board>> findBoardList() {
 		
 		List<Section> sections = sectionRepository.findNotHiddenSections();

@@ -1,7 +1,7 @@
 <main>
 <section class="formarea">
 <form action="${cwebpath}board.php" method="post" enctype="multipart/form-data">
-<input type="hidden" name="board" value="b">
+<input type="hidden" name="board" value="${board.name}">
 <input type="hidden" name="replythread" value="0">
 <table>
 <tr>

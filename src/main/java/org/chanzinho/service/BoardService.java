@@ -10,6 +10,7 @@ public interface BoardService {
 	
 	Board findById(Integer id);
 	
+	Board findByName(String name);
+	
 	Map<Section, List<Board>> findBoardList();
-
 }

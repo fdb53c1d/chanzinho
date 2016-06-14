@@ -30,6 +30,11 @@ public class PostServiceImpl implements PostService {
 	}
 	
 	@Override
+	public Post save(Post post) {
+		return postRepository.save(post);
+	}
+	
+	@Override
 	public List<Post> findOpsByBoardIdAndPageIndex(Integer boardId, Integer index) {
 		List<Post> posts = new ArrayList<Post>();
 		Page<Post> page = postRepository.findByBoardIdAndParentIdAndIsDeleted(boardId, 0L, 0, new PageRequest(index, 10, Sort.Direction.DESC, "bumped"));

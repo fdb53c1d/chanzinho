@@ -14,4 +14,5 @@ public interface BoardRepository extends JpaRepository<Board, Integer> {
 	@Query("select b from Board b where b.section = :id order by b.order")
 	List<Board> findBoardsBySection(@Param("id") Integer id);
 	
+	Board findByName(String name);
 }

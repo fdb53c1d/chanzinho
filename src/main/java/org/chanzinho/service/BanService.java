@@ -8,11 +8,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class BanService {
 
-	@Autowired
-	BanListRepository banListRepository;	
-	
-	public BanList findById(Integer id) {
-		return banListRepository.findById(id);
-	}
-	
+  @Autowired
+  BanListRepository banListRepository;
+
+  public BanList findById(Integer id) {
+    return banListRepository.findById(id);
+  }
 }

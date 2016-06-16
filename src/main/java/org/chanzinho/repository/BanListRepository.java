@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BanListRepository extends JpaRepository<BanList, Integer> {
 
-	BanList findById(Integer id);
-	
+  BanList findById(Integer id);
+
 }

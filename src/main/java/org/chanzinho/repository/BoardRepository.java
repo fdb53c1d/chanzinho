@@ -8,11 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface BoardRepository extends JpaRepository<Board, Integer> {
-	
-	Board findById(Integer id);
 
-	@Query("select b from Board b where b.section = :id order by b.order")
-	List<Board> findBoardsBySection(@Param("id") Integer id);
-	
-	Board findByName(String name);
+  Board findById(Integer id);
+
+  @Query("select b from Board b where b.section = :id order by b.order")
+  List<Board> findBoardsBySection(@Param("id") Integer id);
+
+  Board findByName(String name);
 }

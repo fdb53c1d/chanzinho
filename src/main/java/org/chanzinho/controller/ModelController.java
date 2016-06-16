@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @EnableAutoConfiguration
 public class ModelController {
-	
-	@Autowired
-	BoardService boardService;
-	@Autowired
-	PostService postService;
-	
-	@RequestMapping(value="/findboard.php", method=RequestMethod.GET)
-	public String findBoard(@ModelAttribute("id") Integer id) {
-		return boardService.findById(id).toString();
-	}
-	
-	@RequestMapping(value="findpost.php", method=RequestMethod.GET)
-	public String findPost(@ModelAttribute("id") Long id) {
-		return postService.findById(id).toString();
-	}
-	
+
+  @Autowired
+  BoardService boardService;
+  @Autowired
+  PostService postService;
+
+  @RequestMapping(value = "/findboard.php", method = RequestMethod.GET)
+  public String findBoard(@ModelAttribute("id") Integer id) {
+    return boardService.findById(id).toString();
+  }
+
+  @RequestMapping(value = "findpost.php", method = RequestMethod.GET)
+  public String findPost(@ModelAttribute("id") Long id) {
+    return postService.findById(id).toString();
+  }
+
 }

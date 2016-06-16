@@ -14,29 +14,29 @@ import org.springframework.stereotype.Service;
 @Service
 public class BoardService {
 
-	@Autowired
-	BoardRepository boardRepository;
-	@Autowired
-	SectionRepository sectionRepository;
-	
-	public Board findById(Integer id) {
-		return boardRepository.findById(id);
-	}
-	
-	public Board findByName(String name) {
-		return boardRepository.findByName(name);
-	}
-	
-	public Map<Section, List<Board>> findBoardList() {
-		
-		List<Section> sections = sectionRepository.findNotHiddenSections();
-		Map<Section, List<Board>> boardList = new LinkedHashMap<Section, List<Board>>();
-		
-		for(Section section : sections) {
-			List<Board> boards = boardRepository.findBoardsBySection(section.getId());
-			boardList.put(section, boards);
-		}
-		
-		return boardList;
-	}
+  @Autowired
+  BoardRepository boardRepository;
+  @Autowired
+  SectionRepository sectionRepository;
+
+  public Board findById(Integer id) {
+    return boardRepository.findById(id);
+  }
+
+  public Board findByName(String name) {
+    return boardRepository.findByName(name);
+  }
+
+  public Map<Section, List<Board>> findBoardList() {
+
+    List<Section> sections = sectionRepository.findNotHiddenSections();
+    Map<Section, List<Board>> boardList = new LinkedHashMap<Section, List<Board>>();
+
+    for (Section section : sections) {
+      List<Board> boards = boardRepository.findBoardsBySection(section.getId());
+      boardList.put(section, boards);
+    }
+
+    return boardList;
+  }
 }

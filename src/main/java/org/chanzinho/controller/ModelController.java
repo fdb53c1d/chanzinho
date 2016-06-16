@@ -1,6 +1,5 @@
 package org.chanzinho.controller;
 
-import org.chanzinho.service.BanListService;
 import org.chanzinho.service.BoardService;
 import org.chanzinho.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,6 @@ public class ModelController {
 	BoardService boardService;
 	@Autowired
 	PostService postService;
-	@Autowired
-	BanListService banListService;
 	
 	@RequestMapping(value="/findboard.php", method=RequestMethod.GET)
 	public String findBoard(@ModelAttribute("id") Integer id) {
@@ -31,8 +28,4 @@ public class ModelController {
 		return postService.findById(id).toString();
 	}
 	
-	@RequestMapping(value="findban.php", method=RequestMethod.GET)
-	public String findBan(@ModelAttribute("id") Integer id) {
-		return banListService.findById(id).toString();
-	}
 }

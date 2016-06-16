@@ -1,13 +1,12 @@
-package org.chanzinho.service.impl;
+package org.chanzinho.service;
 
 import org.chanzinho.model.BanList;
 import org.chanzinho.repository.BanListRepository;
-import org.chanzinho.service.BanListService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-public class BanServiceImpl implements BanListService {
+@Service
+public class BanService {
 
 	@Autowired
 	BanListRepository banListRepository;	

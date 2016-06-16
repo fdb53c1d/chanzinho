@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.util.HtmlUtils;
 
 @RestController
 @EnableWebMvc
@@ -60,7 +61,7 @@ public class PostController {
 			post.setIp(request.getRemoteAddr());
 			post.setIsDeleted(0);
 			post.setLocked(0);
-			post.setMessage(message);
+			post.setMessage(HtmlUtils.htmlEscape(message).replaceAll("\n", "<br>"));
 			post.setName(name);
 			post.setParentId(0L);
 			post.setPassword(postPassword);

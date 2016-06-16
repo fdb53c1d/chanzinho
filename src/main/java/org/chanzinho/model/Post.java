@@ -1,5 +1,7 @@
 package org.chanzinho.model;
 
+import java.sql.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -251,6 +253,10 @@ public class Post {
 	}
 	public void setBumped(Integer bumped) {
 		this.bumped = bumped;
+	}
+	
+	public Date getDate() {
+		return new Date((timestamp.longValue())*1000L);
 	}
 	
 	@Override

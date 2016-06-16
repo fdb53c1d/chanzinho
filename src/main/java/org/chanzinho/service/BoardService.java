@@ -1,16 +1,42 @@
 package org.chanzinho.service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.chanzinho.model.Board;
 import org.chanzinho.model.Section;
+import org.chanzinho.repository.BoardRepository;
+import org.chanzinho.repository.SectionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public interface BoardService {
+@Service
+public class BoardService {
+
+	@Autowired
+	BoardRepository boardRepository;
+	@Autowired
+	SectionRepository sectionRepository;
 	
-	Board findById(Integer id);
+	public Board findById(Integer id) {
+		return boardRepository.findById(id);
+	}
 	
-	Board findByName(String name);
+	public Board findByName(String name) {
+		return boardRepository.findByName(name);
+	}
 	
-	Map<Section, List<Board>> findBoardList();
+	public Map<Section, List<Board>> findBoardList() {
+		
+		List<Section> sections = sectionRepository.findNotHiddenSections();
+		Map<Section, List<Board>> boardList = new LinkedHashMap<Section, List<Board>>();
+		
+		for(Section section : sections) {
+			List<Board> boards = boardRepository.findBoardsBySection(section.getId());
+			boardList.put(section, boards);
+		}
+		
+		return boardList;
+	}
 }

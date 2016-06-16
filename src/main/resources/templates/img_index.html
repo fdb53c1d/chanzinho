@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title th:text="|/${board.name}/ - ${board.desc}|"></title>
+<link rel="shortcut icon" th:href="@{~/assets/favicon.png}" />
+<link rel="stylesheet" type="text/css" th:href="@{~/css/img_global.css}" />
+</head>
+<body>
+<nav class="navtop">
+<ul th:each="section : ${boardList}" th:if="${not #lists.isEmpty(section.value)}">
+<li th:each="board : ${section.value}" th:text="${board.name}"></li>
+</ul>
+</nav>
+<header>
+<img th:src="@{~/assets/favicon.png}" />
+<h2 th:text="|/${board.name}/ - ${board.desc}|"></h2>
+</header>
+<main>
+<section class="formarea">
+<form th:action="@{~/board.php}" method="post" enctype="multipart/form-data">
+<input type="hidden" name="board" th:value="${board.name}" />
+<input type="hidden" name="replythread" value="0" />
+<table>
+<tr>
+<th>Nome</th>
+<td><input type="text" name="name" size="28" maxlength="75"></input></td>
+</tr>
+<tr>
+<th>Email</th>
+<td><input type="text" name="em" size="28" maxlength="75"></input></td>
+</tr>
+<tr>
+<th>Assunto</th>
+<td><input type="text" name="subject" size="35" maxlength="75"></input><input type="submit" value="Abrir Threadzinha"></input></td>
+</tr>
+<tr>
+<th>Mensagem</th>
+<td><textarea name="message" cols="48" rows="4"></textarea></td>
+</tr>
+<tr>
+<th>Arquivo</th>
+<td><input type="file" name="imagefile" size="35" accept="image/*"></input></td>
+</tr>
+<tr>
+<th>Senha</th>
+<td><input type="password" name="postpassword" size="8"></input></td>
+</tr>
+</table>
+</form>
+</section>
+<section class="postarea">
+<article th:each="op : ${ops}" th:with="post = ${op.key}">
+<div class="op">
+<div class="fileinfo" th:if="${post.fileType} != ''">
+<span th:text="|Arquivo ${post.file}.${post.fileType} - (${post.fileSizeFormatted}, ${post.imageW}x${post.imageH}, ${post.fileOriginal}.${post.fileType})|"></span>
+</div>
+<div class="image" th:if="${post.fileType} != ''">
+<figure>
+<a target="_blank" th:href="@{~/__${board.name}__/src/__${post.file}__.__${post.fileType}__}">
+<img th:src="@{~/__${board.name}__/thumb/__${post.file}__s.__${post.fileType}__}" th:alt="${post.id}" class="thumb" th:height="${post.thumbH}" th:width="${post.thumbW}" />
+</a>
+</figure>
+</div>
+<div class="postinfo">
+<span class="subject" th:text="${post.subject}"></span>
+<span class="postername" th:if="${post.name} == ''" th:text="${board.anonymous}"></span>
+<span class="postername" th:if="${post.name} != ''" th:text="${post.name}"></span>
+<span class="tripcode" th:if="${post.tripcode} != ''" th:text="${post.tripcode}"></span>
+<span class="capcode"></span>
+<time th:text="${#calendars.format(post.getDate(), 'dd/MM/yyyy(EEE)HH:mm')}"></time>
+<span th:text="|No. ${post.id} [Responder]|"></span>
+</div>
+<div class="message">
+<p th:utext="${post.message}"></p>
+</div>
+</div>
+<div class="reply" th:each="reply : ${op.value}">
+<div class="postinfo">
+<span class="subject" th:text="${reply.subject}"></span>
+<span class="postername" th:if="${reply.name} == ''" th:text="${board.anonymous}"></span>
+<span class="postername" th:if="${reply.name} != ''" th:text="${reply.name}"></span>
+<span class="tripcode" th:if="${reply.tripcode} != ''" th:text="${reply.tripcode}"></span>
+<span class="capcode"></span>
+<time th:text="${#calendars.format(reply.getDate(), 'dd/MM/yyyy(EEE)HH:mm')}"></time>
+<span th:text="|No. ${reply.id}|"></span>
+</div>
+<div class="fileinfo">
+<span th:if="${reply.fileType} != ''" th:text="|Arquivo ${reply.file}.${reply.fileType} - (${reply.fileSizeFormatted}, ${reply.imageW}x${reply.imageH}, ${reply.fileOriginal}.${reply.fileType})|"></span>
+</div>
+<div class="image"  th:if="${reply.fileType} != ''">
+<figure>
+<a target="_blank" th:href="@{~/__${board.name}__/src/__${reply.file}__.__${reply.fileType}__}">
+<img th:src="@{~/__${board.name}__/thumb/__${reply.file}__s.__${reply.fileType}__}" th:alt="${reply.id}" class="thumb" th:height="${reply.thumbH}" th:width="${reply.thumbW}" />
+</a>
+</figure>
+</div>
+<div class="message">
+<p th:utext="${reply.message}"></p>
+</div>
+</div>
+</article>
+</section>
+<section class="bottom">
+<table>
+<tr>
+<td>Anterior</td>
+<td class="pagelist">
+<ul>
+<li th:each="i : ${#numbers.sequence(1, 10)}" th:text="${i}"></li>
+</ul>
+</td>
+<td><input type="submit" value="Próximo"></input></td>
+<td>Catálogo</td>
+</tr>
+</table>
+</section>
+</main>
+</body>
+</html>

@@ -5,9 +5,17 @@ spring:
     password: root
   thymeleaf:
     mode: HTML5
+  mvc:
+    locale: en_US
 
 server:
   port: 12345
+  error.whitelabel.enabled: false
   
 multipart:
   maxFileSize: 10Mb
+  
+chanzinho:
+  maxpages: 10
+  indexreplies: 3
+  op.requirefile: true

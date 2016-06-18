@@ -39,4 +39,12 @@ public class BoardService {
 
     return boardList;
   }
+
+  public boolean boardExists(String boardName) {
+    Board board = boardRepository.findByName(boardName);
+    if (board == null) {
+      return false;
+    }
+    return true;
+  }
 }

@@ -1,19 +1,18 @@
 package org.chanzinho.controller;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Random;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FilenameUtils;
+import org.chanzinho.exception.ChanzinhoException;
+import org.chanzinho.model.Board;
 import org.chanzinho.model.Post;
 import org.chanzinho.service.BoardService;
+import org.chanzinho.service.PostProcessor;
 import org.chanzinho.service.PostService;
-import org.im4java.core.ConvertCmd;
-import org.im4java.core.IMOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,16 +30,65 @@ public class PostController {
   BoardService boardService;
   @Autowired
   PostService postService;
+  @Autowired
+  PostProcessor postProcessor;
 
-  @RequestMapping(value = "/board.php", method = RequestMethod.POST)
-  public String postHandler(@RequestParam("board") String board,
+  @RequestMapping(value = "/board.php", method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
+  public String postHandler(@RequestParam("board") String boardName,
       @RequestParam("replythread") String replyThread, @RequestParam("em") String email,
       @RequestParam("name") String name, @RequestParam("subject") String subject,
       @RequestParam("message") String message, @RequestParam("postpassword") String postPassword,
-      @RequestParam("imagefile") MultipartFile imageFile, HttpServletRequest request) {
-
+      @RequestParam("imagefile") MultipartFile imageFile, HttpServletRequest request, HttpServletResponse response) {
+    
+    try {
+      postProcessor.validatePost(boardName, replyThread, email, name, subject, message, postPassword, imageFile, request);
+    } catch (ChanzinhoException e) {
+      return e.getMessage();
+    }
+    
     Post post = new Post();
 
+    if(Integer.parseInt(replyThread) == 0) {
+      Board board = boardService.findByName(boardName);
+      post.setBoardId(board.getId());
+      Long timestamp = Instant.now().getEpochSecond();
+      post.setBumped(timestamp.intValue());
+      post.setDeletedTimestamp(0);
+      post.setEmail(email);
+      post.setFile(String.valueOf(timestamp) + String.format("%03d", new Random().nextInt(99)));
+      post.setIp(request.getRemoteAddr());
+      post.setIsDeleted(0);
+      post.setLocked(0);
+      post.setMessage(HtmlUtils.htmlEscape(message).replaceAll("\n", "<br/>"));
+      post.setName(name);
+      post.setParentId(0L);
+      post.setPassword(postPassword);
+      post.setPosterAuthority(0);
+      post.setReviewed(0);
+      post.setStickied(0);
+      post.setSubject(subject);
+      post.setTag("");
+      post.setTimestamp(timestamp.intValue());
+      post.setTripcode("");
+      post.setIpMd5("");
+      
+      try {
+        postProcessor.processFile(imageFile, board, post);
+      } catch (ChanzinhoException e) {
+        return e.getMessage();
+      }
+    }
+    
+    postService.save(post);
+    try {
+      response.sendRedirect("/" + boardName);
+    } catch (IOException e) {
+      return "Erro de redirecionamento";
+    }
+      
+    return "";
+    /*
+    
     if (Integer.parseInt(replyThread) == 0) {
       if (imageFile == null || imageFile.isEmpty()) {
         return "poste uma imagem";
@@ -141,10 +189,10 @@ public class PostController {
 
     post.setFileMd5("");
     post.setIpMd5("");
-
+    
     postService.save(post);
 
-    return post.toString();
+    return post.toString();*/
   }
 
 }

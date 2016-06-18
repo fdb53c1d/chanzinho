@@ -23,7 +23,7 @@
       <section class="formarea">
         <form th:action="@{~/board.php}" method="post" enctype="multipart/form-data">
           <input type="hidden" name="board" th:value="${board.name}" />
-          <input type="hidden" name="replythread" value="0" />
+          <input type="hidden" name="replythread" th:value="${op.id}" />
           <table class="formtable">
             <tr>
               <th>Nome</th>
@@ -53,39 +53,36 @@
         </form>
       </section>
       <section class="postarea">
-        <article th:each="op : ${ops}" th:with="post = ${op.key}">
-          <div class="op" th:id="'post' + ${post.id}">
-            <div class="fileinfo" th:if="${post.fileType} != ''">
-              <span th:text="'Arquivo: '"></span>
-              <a th:href="@{~/__${board.name}__/src/__${post.file}__.__${post.fileType}__}" th:text="|${post.file}.${post.fileType}|"></a>
-              <span th:text="| - (${post.fileSizeFormatted}, ${post.imageW}x${post.imageH}, ${post.fileOriginal}.${post.fileType})|"></span>
+        <article>
+          <div class="op" th:id="'post' + ${op.id}">
+            <div class="fileinfo" th:if="${op.fileType} != ''">
+              <span th:text="|Arquivo ${op.file}.${op.fileType} - (${op.fileSizeFormatted}, ${op.imageW}x${op.imageH}, ${op.fileOriginal}.${op.fileType})|"></span>
             </div>
-            <div class="image" th:if="${post.fileType} != ''">
+            <div class="image" th:if="${op.fileType} != ''">
               <figure>
-                <a target="_blank" th:href="@{~/__${board.name}__/src/__${post.file}__.__${post.fileType}__}">
-                <img th:if="${post.fileType == 'webm'}" th:src="@{~/__${board.name}__/thumb/__${post.file}__s.jpg}" th:alt="${post.id}" class="thumb" th:height="${post.thumbH}" th:width="${post.thumbW}" />
-                <img th:if="${post.fileType != 'webm'}" th:src="@{~/__${board.name}__/thumb/__${post.file}__s.__${post.fileType}__}" th:alt="${post.id}" class="thumb" th:height="${post.thumbH}" th:width="${post.thumbW}" />
+                <a target="_blank" th:href="@{~/__${board.name}__/src/__${op.file}__.__${op.fileType}__}">
+                <img th:if="${op.fileType == 'webm'}" th:src="@{~/__${board.name}__/thumb/__${op.file}__s.jpg}" th:alt="${op.id}" class="thumb" th:height="${op.thumbH}" th:width="${op.thumbW}" />
+                <img th:if="${op.fileType != 'webm'}" th:src="@{~/__${board.name}__/thumb/__${op.file}__s.__${op.fileType}__}" th:alt="${op.id}" class="thumb" th:height="${op.thumbH}" th:width="${op.thumbW}" />
                 </a>
               </figure>
             </div>
             <div class="postinfo">
-              <span class="subject" th:text="${post.subject}"></span>
-              <span class="postername" th:if="${post.name} == ''" th:text="${board.anonymous}"></span>
-              <span class="postername" th:if="${post.name} != ''" th:text="${post.name}"></span>
-              <span class="tripcode" th:if="${post.tripcode} != ''" th:text="${post.tripcode}"></span>
+              <span class="subject" th:text="${op.subject}"></span>
+              <span class="postername" th:if="${op.name} == ''" th:text="${board.anonymous}"></span>
+              <span class="postername" th:if="${op.name} != ''" th:text="${op.name}"></span>
+              <span class="tripcode" th:if="${op.tripcode} != ''" th:text="${op.tripcode}"></span>
               <span class="capcode"></span>
-              <time th:text="${#calendars.format(post.getDate(), 'dd/MM/yyyy(EEE)HH:mm')}"></time>
+              <time th:text="${#calendars.format(op.getDate(), 'dd/MM/yyyy(EEE)HH:mm')}"></time>
               <span>
-                <a th:href="@{~/__${board.name}__/res/__${post.id}__.html#post__${post.id}__}" th:text="No."></a>
-                <a th:href="@{~/__${board.name}__/res/__${post.id}__.html#post__${post.id}__}" th:text="${post.id}"></a>
-                <a th:href="@{~/__${board.name}__/res/__${post.id}__.html}" th:text="[Responder]"></a>
+                <a th:href="@{~/__${board.name}__/res/__${op.id}__.html#post__${op.id}__}" th:text="No."></a>
+                <a th:href="@{~/__${board.name}__/res/__${op.id}__.html#post__${op.id}__}" th:text="${op.id}"></a>
               </span>
             </div>
             <div class="message">
-              <p th:utext="${post.message}"></p>
+              <p th:utext="${op.message}"></p>
             </div>
           </div>
-          <div class="reply" th:each="reply : ${op.value}" th:id="'post' + ${reply.id}">
+          <div class="reply" th:each="reply : ${replies}" th:id="'post' + ${reply.id}">
             <div class="postinfo">
               <span class="subject" th:text="${reply.subject}"></span>
               <span class="postername" th:if="${reply.name} == ''" th:text="${board.anonymous}"></span>
@@ -94,14 +91,12 @@
               <span class="capcode"></span>
               <time th:text="${#calendars.format(reply.getDate(), 'dd/MM/yyyy(EEE)HH:mm')}"></time>
               <span>
-                <a th:href="@{~/__${board.name}__/res/__${post.id}__.html#post__${reply.id}__}" th:text="No."></a>
-                <a th:href="@{~/__${board.name}__/res/__${post.id}__.html#post__${reply.id}__}" th:text="${reply.id}"></a>
+                <a th:href="@{~/__${board.name}__/res/__${op.id}__.html#post__${reply.id}__}" th:text="No."></a>
+                <a th:href="@{~/__${board.name}__/res/__${op.id}__.html#post__${reply.id}__}" th:text="${reply.id}"></a>
               </span>
             </div>
-            <div class="fileinfo" th:if="${reply.fileType} != ''">
-              <span th:text="'Arquivo: '"></span>
-              <a th:href="@{~/__${board.name}__/src/__${reply.file}__.__${reply.fileType}__}" th:text="|${reply.file}.${reply.fileType}|"></a>
-              <span th:text="| - (${reply.fileSizeFormatted}, ${reply.imageW}x${reply.imageH}, ${reply.fileOriginal}.${reply.fileType})|"></span>
+            <div class="fileinfo">
+              <span th:if="${reply.fileType} != ''" th:text="|Arquivo ${reply.file}.${reply.fileType} - (${reply.fileSizeFormatted}, ${reply.imageW}x${reply.imageH}, ${reply.fileOriginal}.${reply.fileType})|"></span>
             </div>
             <div class="image"  th:if="${reply.fileType} != ''">
               <figure>
@@ -117,33 +112,6 @@
           </div>
         </article>
       </section>
-      <section class="bottom">
-        <table>
-          <tr>
-            <td>
-              <form th:if="${page} &gt; 1" th:action="@{~/__${board.name}__/__${page-1}__.html}" method="get">
-                <input type="submit" value="Anterior"></input>
-              </form>
-              <span th:if="${page} == 1">Anterior</span>
-            </td>
-            <td class="pagelist">
-              <ul>
-                <li th:each="i : ${#numbers.sequence(1, maxpages)}">
-                  <a th:if="${page} != ${i}" th:href="@{~/__${board.name}__/__${i}__.html}" th:text="${i}"></a>
-                  <span th:if="${page} == ${i}" th:text="${i}"></span>
-                </li>
-              </ul>
-            </td>
-            <td>
-              <form th:if="${page} &lt; ${maxpages}" th:action="@{~/__${board.name}__/__${page+1}__.html}" method="get">
-                <input type="submit" value="Próximo"></input>
-              </form>
-              <span th:if="${page} == ${maxpages}">Próximo</span>
-            </td>
-            <td>Catálogo</td>
-          </tr>
-        </table>
-      </section>
     </main>
     <nav class="navbottom">
       <ul th:each="section : ${boardList}" th:if="${not #lists.isEmpty(section.value)}">
@@ -153,7 +121,7 @@
       </ul>
     </nav>
     <footer>
-      <p>asdasdasdasd <br/> asdasdasd</p>
+      <p>asdasdasdsad <br/> asdasdasd</p>
     </footer>
   </body>
 </html>

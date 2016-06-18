@@ -62,4 +62,20 @@ public class PostService {
     }
     return posts;
   }
+
+  public Post findOp(Integer boardId, Long threadId) {
+    Post op = postRepository.findByBoardIdAndId(boardId, threadId);
+    
+    if(op.getParentId() != 0) {
+      return null;
+    }
+    
+    return op;
+  }
+  
+  public List<Post> findReplies(Integer boardId, Long threadId) {
+    List<Post> replies = postRepository.findByBoardIdAndParentIdAndIsDeleted(boardId, threadId, 0);
+
+    return replies;
+  }
 }

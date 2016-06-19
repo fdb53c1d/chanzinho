@@ -98,3 +98,20 @@ footer {
 .fileinfo {
   margin-left: 20px;
 }
+
+header img {
+  border: 0.5px solid black;
+  max-width: 300px;
+}
+
+.deltable {
+  float: right;
+}
+
+.bottom table {
+  display: inline-table;
+}
+
+.bottom {
+  overflow: auto;
+}

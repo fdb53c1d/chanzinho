@@ -9,6 +9,7 @@ import java.text.DecimalFormatSymbols;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -95,92 +96,97 @@ public class PostProcessor {
       fileType = "gif";
     } else if (multiPartFile.getContentType().equals("video/webm")) {
       fileType = "webm";
+    } else if (multiPartFile.getContentType().equals("video/mp4")) {
+      fileType = "mp4";
     } else {
       throw new ChanzinhoException("Tipo de arquivo não suportado.");
     }
-
+    
+    post.setFileType(fileType);
+    post.setFileOriginal(FilenameUtils.getBaseName(multiPartFile.getOriginalFilename()));    
+    
     String filePath = "resources/" + board.getName() + "/src/" + post.getFile() + "." + fileType;
     File file;
     BufferedImage image;
 
+    long fileSize = multiPartFile.getSize();
+
+    final String[] units = new String[] {"B", "kB", "MB", "GB", "TB"};
+    int digitGroups = (int) (Math.log10(fileSize) / Math.log10(1024));
+    DecimalFormat decimalFormat = new DecimalFormat("####.##");
+    DecimalFormatSymbols dfs = decimalFormat.getDecimalFormatSymbols();
+    dfs.setDecimalSeparator('.');
+    decimalFormat.setDecimalFormatSymbols(dfs);
+    String fileSizeFormatted =
+        decimalFormat.format(fileSize / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+
+    post.setFileSize(new Long(fileSize).intValue());
+    post.setFileSizeFormatted(fileSizeFormatted);
+    
     try {
       file = new File(filePath);
       multiPartFile.transferTo(file.getAbsoluteFile());
-      if (fileType.equals("jpg") || fileType.equals("png") || fileType.equals("gif")) {
-        image = ImageIO.read(multiPartFile.getInputStream());
-      }
     } catch (IOException e) {
       throw new ChanzinhoException("Falha ao processar arquivo: " + e.getMessage());
     }
 
-    
-    if (fileType.equals("webm")) {
-      FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(file);
-      post.setFileType("webm");
-      post.setFileOriginal(FilenameUtils.getBaseName(multiPartFile.getOriginalFilename()));
-      
-      long fileSize = multiPartFile.getSize();
 
-      final String[] units = new String[] {"B", "kB", "MB", "GB", "TB"};
-      int digitGroups = (int) (Math.log10(fileSize) / Math.log10(1024));
-      DecimalFormat decimalFormat = new DecimalFormat("####.##");
-      DecimalFormatSymbols dfs = decimalFormat.getDecimalFormatSymbols();
-      dfs.setDecimalSeparator('.');
-      decimalFormat.setDecimalFormatSymbols(dfs);
-      String fileSizeFormatted =
-          decimalFormat.format(fileSize / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    if (fileType.equals("webm") || fileType.equals("mp4") || fileType.equals("flv") || fileType.equals("mkv") || fileType.equals("3gp") || fileType.equals("avi") || fileType.equals("wmv")) {
 
-      post.setFileSize(new Long(fileSize).intValue());
-      post.setFileSizeFormatted(fileSizeFormatted);
-      
       try {
+        FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(file);
         grabber.start();
         ToIplImage converter = new ToIplImage();
-        IplImage grabbedImage = converter.convert(grabber.grab());
+        IplImage grabbedImage = converter.convert(grabber.grabImage());
         int width = grabbedImage.width();
         int height = grabbedImage.height();
-        
+
         post.setImageW(width);
         post.setImageH(height);
-        
+
         IplImage thumbnail;
-        
+        Frame frameThumb;
+
         if (Math.max(width, height) <= 200) {
           thumbnail = IplImage.create(width, height, grabbedImage.depth(), 1);
           post.setThumbW(width);
           post.setThumbH(height);
+
+          frameThumb = converter.convert(grabbedImage);
         } else {
           int max = Math.max(width, height);
           if (max == height) {
             int thumbWidth = new Double(((double) width) * ((double) 200.0 / height)).intValue();
-            thumbnail = IplImage.create(thumbWidth,  200,  grabbedImage.depth(), grabbedImage.nChannels());
+            thumbnail =
+                IplImage.create(thumbWidth, 200, grabbedImage.depth(), grabbedImage.nChannels());
             post.setThumbH(200);
             post.setThumbW(thumbWidth);
           } else {
             int thumbHeight = new Double(((double) height) * ((double) 200.0 / width)).intValue();
-            thumbnail = IplImage.create(200, thumbHeight, grabbedImage.depth(), grabbedImage.nChannels());
+            thumbnail =
+                IplImage.create(200, thumbHeight, grabbedImage.depth(), grabbedImage.nChannels());
             post.setThumbH(thumbHeight);
             post.setThumbW(200);
           }
+          org.bytedeco.javacpp.opencv_imgproc.cvResize(grabbedImage, thumbnail);
+
+          frameThumb = converter.convert(thumbnail);
         }
-        
-        org.bytedeco.javacpp.opencv_imgproc.cvResize(grabbedImage, thumbnail);
-        
-        Frame frameThumb = converter.convert(thumbnail);
-        
-        ImageIO.write(new Java2DFrameConverter().convert(frameThumb), "jpg", new File("resources/" + board.getName() + "/thumb/" + post.getFile() + "s.jpg"));
-        
+
+        ImageIO.write(new Java2DFrameConverter().convert(frameThumb), "jpg",
+            new File("resources/" + board.getName() + "/thumb/" + post.getFile() + "s.jpg"));
+
       } catch (FrameGrabber.Exception e) {
         throw new ChanzinhoException("Erro ao gerar thumbnail do arquivo.");
       } catch (IOException e) {
         throw new ChanzinhoException("Erro ao gerar thumbnail do arquivo.");
       }
     }
-    
+
     if (fileType.equals("jpg") || fileType.equals("png") || fileType.equals("gif")) {
-      
+
       try {
-          image = ImageIO.read(multiPartFile.getInputStream());
+        image = ImageIO.read(FileUtils.openInputStream(file));
       } catch (IOException e) {
         throw new ChanzinhoException("Falha ao processar arquivo: " + e.getMessage());
       }
@@ -188,24 +194,8 @@ public class PostProcessor {
       int imageH = image.getHeight();
       int imageW = image.getWidth();
 
-      post.setFileType(fileType);
       post.setImageH(imageH);
       post.setImageW(imageW);
-      post.setFileOriginal(FilenameUtils.getBaseName(multiPartFile.getOriginalFilename()));
-
-      long fileSize = multiPartFile.getSize();
-
-      final String[] units = new String[] {"B", "kB", "MB", "GB", "TB"};
-      int digitGroups = (int) (Math.log10(fileSize) / Math.log10(1024));
-      DecimalFormat decimalFormat = new DecimalFormat("####.##");
-      DecimalFormatSymbols dfs = decimalFormat.getDecimalFormatSymbols();
-      dfs.setDecimalSeparator('.');
-      decimalFormat.setDecimalFormatSymbols(dfs);
-      String fileSizeFormatted =
-          decimalFormat.format(fileSize / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
-
-      post.setFileSize(new Long(fileSize).intValue());
-      post.setFileSizeFormatted(fileSizeFormatted);
 
       ConvertCmd cmd = new ConvertCmd();
       IMOperation op = new IMOperation();
@@ -239,7 +229,7 @@ public class PostProcessor {
         throw new ChanzinhoException("Falha ao processar thumbnail do arquivo.");
       }
     }
-    
+
     post.setFileMd5("");
 
     return post;

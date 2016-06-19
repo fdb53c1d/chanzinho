@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html th:manifest="@{~/manifest.appcache}" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <title th:text="|/${board.name}/ - ${board.desc}|"></title>
@@ -16,7 +16,7 @@
       </ul>
     </nav>
     <header>
-      <img th:src="@{~/assets/favicon.png}" />
+      <img th:src="@{~/banners/__${banner}__}" />
       <h2 th:text="|/${board.name}/ - ${board.desc}|"></h2>
     </header>
     <main>
@@ -61,8 +61,8 @@
             <div class="image" th:if="${op.fileType} != ''">
               <figure>
                 <a target="_blank" th:href="@{~/__${board.name}__/src/__${op.file}__.__${op.fileType}__}">
-                <img th:if="${op.fileType == 'webm'}" th:src="@{~/__${board.name}__/thumb/__${op.file}__s.jpg}" th:alt="${op.id}" class="thumb" th:height="${op.thumbH}" th:width="${op.thumbW}" />
-                <img th:if="${op.fileType != 'webm'}" th:src="@{~/__${board.name}__/thumb/__${op.file}__s.__${op.fileType}__}" th:alt="${op.id}" class="thumb" th:height="${op.thumbH}" th:width="${op.thumbW}" />
+                <img th:if="${op.fileType == 'webm' or op.fileType == 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${op.file}__s.jpg}" th:alt="${op.id}" class="thumb" th:height="${op.thumbH}" th:width="${op.thumbW}" />
+                <img th:if="${op.fileType != 'webm' and op.fileType != 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${op.file}__s.__${op.fileType}__}" th:alt="${op.id}" class="thumb" th:height="${op.thumbH}" th:width="${op.thumbW}" />
                 </a>
               </figure>
             </div>
@@ -101,8 +101,8 @@
             <div class="image"  th:if="${reply.fileType} != ''">
               <figure>
                 <a target="_blank" th:href="@{~/__${board.name}__/src/__${reply.file}__.__${reply.fileType}__}">
-                <img th:if="${reply.fileType == 'webm'}" th:src="@{~/__${board.name}__/thumb/__${reply.file}__s.jpg}" th:alt="${reply.id}" class="thumb" th:height="${reply.thumbH}" th:width="${reply.thumbW}" />
-                <img th:if="${reply.fileType != 'webm'}" th:src="@{~/__${board.name}__/thumb/__${reply.file}__s.__${reply.fileType}__}" th:alt="${reply.id}" class="thumb" th:height="${reply.thumbH}" th:width="${reply.thumbW}" />
+                <img th:if="${reply.fileType == 'webm' or reply.fileType == 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${reply.file}__s.jpg}" th:alt="${reply.id}" class="thumb" th:height="${reply.thumbH}" th:width="${reply.thumbW}" />
+                <img th:if="${reply.fileType != 'webm' and reply.fileType != 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${reply.file}__s.__${reply.fileType}__}" th:alt="${reply.id}" class="thumb" th:height="${reply.thumbH}" th:width="${reply.thumbW}" />
                 </a>
               </figure>
             </div>

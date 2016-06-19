@@ -1,5 +1,8 @@
 package org.chanzinho.controller;
 
+import java.io.File;
+import java.util.Random;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
@@ -45,6 +48,9 @@ public class ViewController {
 
     model.addAttribute("postpassword", cookiePassword);
 
+    File banners = new File("resources/banners");
+    model.addAttribute("banner", banners.listFiles()[new Random().nextInt(banners.listFiles().length-1)].getName());
+    
     return "img_index";
   }
 
@@ -79,6 +85,9 @@ public class ViewController {
     }
 
     model.addAttribute("postpassword", cookiePassword);
+    
+    File banners = new File("resources/banners");
+    model.addAttribute("banner", banners.listFiles()[new Random().nextInt(banners.listFiles().length-1)].getName());
 
     return "img_index";
   }
@@ -111,6 +120,9 @@ public class ViewController {
 
     model.addAttribute("postpassword", cookiePassword);
 
+    File banners = new File("resources/banners");
+    model.addAttribute("banner", banners.listFiles()[new Random().nextInt(banners.listFiles().length-1)].getName());
+    
     return "img_thread";
   }
 }

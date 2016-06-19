@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html th:manifest="@{~/manifest.appcache}" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <title th:text="|/${board.name}/ - ${board.desc}|"></title>
@@ -16,7 +16,7 @@
       </ul>
     </nav>
     <header>
-      <img th:src="@{~/assets/favicon.png}" />
+      <img th:src="@{~/banners/__${banner}__}" />
       <h2 th:text="|/${board.name}/ - ${board.desc}|"></h2>
     </header>
     <main>
@@ -52,6 +52,7 @@
           </table>
         </form>
       </section>
+      <form th:action="@{~/board.php}" method="post">
       <section class="postarea">
         <article th:each="op : ${ops}" th:with="post = ${op.key}">
           <div class="op" th:id="'post' + ${post.id}">
@@ -63,12 +64,13 @@
             <div class="image" th:if="${post.fileType} != ''">
               <figure>
                 <a target="_blank" th:href="@{~/__${board.name}__/src/__${post.file}__.__${post.fileType}__}">
-                <img th:if="${post.fileType == 'webm'}" th:src="@{~/__${board.name}__/thumb/__${post.file}__s.jpg}" th:alt="${post.id}" class="thumb" th:height="${post.thumbH}" th:width="${post.thumbW}" />
-                <img th:if="${post.fileType != 'webm'}" th:src="@{~/__${board.name}__/thumb/__${post.file}__s.__${post.fileType}__}" th:alt="${post.id}" class="thumb" th:height="${post.thumbH}" th:width="${post.thumbW}" />
+                <img th:if="${post.fileType == 'webm' or post.fileType == 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${post.file}__s.jpg}" th:alt="${post.id}" class="thumb" th:height="${post.thumbH}" th:width="${post.thumbW}" />
+                <img th:if="${post.fileType != 'webm' and post.fileType != 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${post.file}__s.__${post.fileType}__}" th:alt="${post.id}" class="thumb" th:height="${post.thumbH}" th:width="${post.thumbW}" />
                 </a>
               </figure>
             </div>
             <div class="postinfo">
+              <input type="checkbox" th:value="${post.id}"></input>
               <span class="subject" th:text="${post.subject}"></span>
               <span class="postername" th:if="${post.name} == ''" th:text="${board.anonymous}"></span>
               <span class="postername" th:if="${post.name} != ''" th:text="${post.name}"></span>
@@ -87,6 +89,7 @@
           </div>
           <div class="reply" th:each="reply : ${op.value}" th:id="'post' + ${reply.id}">
             <div class="postinfo">
+              <input type="checkbox" value="${reply.id}"></input>
               <span class="subject" th:text="${reply.subject}"></span>
               <span class="postername" th:if="${reply.name} == ''" th:text="${board.anonymous}"></span>
               <span class="postername" th:if="${reply.name} != ''" th:text="${reply.name}"></span>
@@ -106,8 +109,8 @@
             <div class="image"  th:if="${reply.fileType} != ''">
               <figure>
                 <a target="_blank" th:href="@{~/__${board.name}__/src/__${reply.file}__.__${reply.fileType}__}">
-                <img th:if="${reply.fileType == 'webm'}" th:src="@{~/__${board.name}__/thumb/__${reply.file}__s.jpg}" th:alt="${reply.id}" class="thumb" th:height="${reply.thumbH}" th:width="${reply.thumbW}" />
-                <img th:if="${reply.fileType != 'webm'}" th:src="@{~/__${board.name}__/thumb/__${reply.file}__s.__${reply.fileType}__}" th:alt="${reply.id}" class="thumb" th:height="${reply.thumbH}" th:width="${reply.thumbW}" />
+                <img th:if="${reply.fileType == 'webm' or reply.fileType == 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${reply.file}__s.jpg}" th:alt="${reply.id}" class="thumb" th:height="${reply.thumbH}" th:width="${reply.thumbW}" />
+                <img th:if="${reply.fileType != 'webm' and reply.fileType != 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${reply.file}__s.__${reply.fileType}__}" th:alt="${reply.id}" class="thumb" th:height="${reply.thumbH}" th:width="${reply.thumbW}" />
                 </a>
               </figure>
             </div>
@@ -143,7 +146,23 @@
             <td>Catálogo</td>
           </tr>
         </table>
+        <div class="deltable">
+          <table>
+            <tr>
+              <td>[<input type="checkbox" value="fileonly"></input>Deletar arquivo ]
+              	<input type="submit" value="Deletar"></input>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Motivo: <input type="text" name="reportreason" size="10" maxlength="255"></input>
+                <input type="submit" value="Denunciar"></input>
+              </td>
+            </tr>
+          </table>
+        </div>
       </section>
+      </form>
     </main>
     <nav class="navbottom">
       <ul th:each="section : ${boardList}" th:if="${not #lists.isEmpty(section.value)}">

@@ -23,7 +23,7 @@ body {
 }
 
 header h2 {
-  font-size: 25pt;
+  font-size: 25px;
 }
 
 a {
@@ -34,14 +34,71 @@ a:hover {
   color: #00008B;
 }
 
-.bottom table {
+/*.bottom table {
   border: 0.5px solid black;
+}*/
+
+/*.bottom table td:not(:last-child) {
+  border-right: 0.5px solid black;
+}*/
+
+article {
+  border-top: 1px solid rgba(63, 105, 181, 0.31);
 }
 
-.bottom table td:not(:last-child) {
-  border-right: 0.5px solid black;
+html {
+  background: #E6E6FA;
+  font-family: 'Roboto';
+  font-size: 12px;
+}
+
+
+.navtop {
+    background: antiquewhite;
+    margin-bottom: 15px;
+}
+
+.navtop ul {
+  margin-top: 5px;
+  margin-bottom: 8px;
 }
 
 article {
-  border-top: 0.5px solid black;
+    margin: 0px;
+    clear: both;
+    margin-top: 20px;
+    padding-top: 10px;
+}
+
+.fileinfo {
+  margin-left: 5px;
+}
+
+.op figure {
+  margin-left: 25px;
+}
+
+footer {
+    background: antiquewhite;
+    padding: 1px;
+}
+
+.postarea {
+    border-bottom: 1px solid rgba(63, 105, 181, 0.31);
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.bottom {
+    border-bottom: 1px solid rgba(63, 105, 181, 0.31);
+    padding-bottom: 10px;
+}
+
+main {
+    border-top: 1px solid rgba(63, 105, 181, 0.31);
+    padding-top: 13px;
+}
+
+header h2 {
+  margin: 5px;
 }

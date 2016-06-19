@@ -177,9 +177,9 @@ public class PostProcessor {
             new File("resources/" + board.getName() + "/thumb/" + post.getFile() + "s.jpg"));
 
       } catch (FrameGrabber.Exception e) {
-        throw new ChanzinhoException("Erro ao gerar thumbnail do arquivo.");
+        throw new ChanzinhoException("Erro ao gerar thumbnail do arquivo: " + e.getMessage());
       } catch (IOException e) {
-        throw new ChanzinhoException("Erro ao gerar thumbnail do arquivo.");
+        throw new ChanzinhoException("Erro ao gerar thumbnail do arquivo: " + e.getMessage());
       }
     }
 
@@ -226,7 +226,7 @@ public class PostProcessor {
       try {
         cmd.run(op);
       } catch (Exception e) {
-        throw new ChanzinhoException("Falha ao processar thumbnail do arquivo.");
+        throw new ChanzinhoException("Falha ao processar thumbnail do arquivo: " + e.getMessage());
       }
     }
 

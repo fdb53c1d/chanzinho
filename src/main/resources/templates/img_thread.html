@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html th:manifest="@{~/manifest.appcache}" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <title th:text="|/${board.name}/ - ${board.desc}|"></title>
@@ -8,120 +8,23 @@
     <link rel="stylesheet" type="text/css" th:href="@{~/css/estilinho.css}" />
   </head>
   <body>
-    <nav class="navtop">
-      <ul th:each="section : ${boardList}" th:if="${not #lists.isEmpty(section.value)}">
-        <li th:each="board : ${section.value}">
-          <a th:href="@{~/__${board.name}__}" th:text="${board.name}"></a>
-        </li>
-      </ul>
-    </nav>
-    <header>
-      <img th:src="@{~/banners/__${banner}__}" />
-      <h2 th:text="|/${board.name}/ - ${board.desc}|"></h2>
-    </header>
+    <nav th:replace="fragments/fragments :: navtop"></nav>
+    <header th:replace="fragments/fragments :: header"></header>
     <main>
-      <section class="formarea">
-        <form th:action="@{~/board.php}" method="post" enctype="multipart/form-data">
-          <input type="hidden" name="board" th:value="${board.name}" />
-          <input type="hidden" name="replythread" th:value="${op.id}" />
-          <table class="formtable">
-            <tr>
-              <th>Nome</th>
-              <td><input type="text" name="name" size="28" maxlength="75"></input></td>
-            </tr>
-            <tr>
-              <th>Email</th>
-              <td><input type="text" name="em" size="28" maxlength="75"></input></td>
-            </tr>
-            <tr>
-              <th>Assunto</th>
-              <td><input type="text" name="subject" size="35" maxlength="75"></input><input type="submit" value="Abrir Threadzinha"></input></td>
-            </tr>
-            <tr>
-              <th>Mensagem</th>
-              <td><textarea name="message" cols="48" rows="4"></textarea></td>
-            </tr>
-            <tr>
-              <th>Arquivo</th>
-              <td><input type="file" name="imagefile" size="35" accept="image/*"></input></td>
-            </tr>
-            <tr>
-              <th>Senha</th>
-              <td><input type="password" name="postpassword" th:value="${postpassword}" size="8"></input></td>
-            </tr>
-          </table>
-        </form>
-      </section>
-      <section class="postarea">
-        <article>
-          <div class="op" th:id="'post' + ${op.id}">
-            <div class="fileinfo" th:if="${op.fileType} != ''">
-              <span th:text="|Arquivo ${op.file}.${op.fileType} - (${op.fileSizeFormatted}, ${op.imageW}x${op.imageH}, ${op.fileOriginal}.${op.fileType})|"></span>
-            </div>
-            <div class="image" th:if="${op.fileType} != ''">
-              <figure>
-                <a target="_blank" th:href="@{~/__${board.name}__/src/__${op.file}__.__${op.fileType}__}">
-                <img th:if="${op.fileType == 'webm' or op.fileType == 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${op.file}__s.jpg}" th:alt="${op.id}" class="thumb" th:height="${op.thumbH}" th:width="${op.thumbW}" />
-                <img th:if="${op.fileType != 'webm' and op.fileType != 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${op.file}__s.__${op.fileType}__}" th:alt="${op.id}" class="thumb" th:height="${op.thumbH}" th:width="${op.thumbW}" />
-                </a>
-              </figure>
-            </div>
-            <div class="postinfo">
-              <span class="subject" th:text="${op.subject}"></span>
-              <span class="postername" th:if="${op.name} == ''" th:text="${board.anonymous}"></span>
-              <span class="postername" th:if="${op.name} != ''" th:text="${op.name}"></span>
-              <span class="tripcode" th:if="${op.tripcode} != ''" th:text="${op.tripcode}"></span>
-              <span class="capcode"></span>
-              <time th:text="${#calendars.format(op.getDate(), 'dd/MM/yyyy(EEE)HH:mm')}"></time>
-              <span>
-                <a th:href="@{~/__${board.name}__/res/__${op.id}__.html#post__${op.id}__}" th:text="No."></a>
-                <a th:href="@{~/__${board.name}__/res/__${op.id}__.html#post__${op.id}__}" th:text="${op.id}"></a>
-              </span>
-            </div>
-            <div class="message">
-              <p th:utext="${op.message}"></p>
-            </div>
-          </div>
-          <div class="reply" th:each="reply : ${replies}" th:id="'post' + ${reply.id}">
-            <div class="postinfo">
-              <span class="subject" th:text="${reply.subject}"></span>
-              <span class="postername" th:if="${reply.name} == ''" th:text="${board.anonymous}"></span>
-              <span class="postername" th:if="${reply.name} != ''" th:text="${reply.name}"></span>
-              <span class="tripcode" th:if="${reply.tripcode} != ''" th:text="${reply.tripcode}"></span>
-              <span class="capcode"></span>
-              <time th:text="${#calendars.format(reply.getDate(), 'dd/MM/yyyy(EEE)HH:mm')}"></time>
-              <span>
-                <a th:href="@{~/__${board.name}__/res/__${op.id}__.html#post__${reply.id}__}" th:text="No."></a>
-                <a th:href="@{~/__${board.name}__/res/__${op.id}__.html#post__${reply.id}__}" th:text="${reply.id}"></a>
-              </span>
-            </div>
-            <div class="fileinfo">
-              <span th:if="${reply.fileType} != ''" th:text="|Arquivo ${reply.file}.${reply.fileType} - (${reply.fileSizeFormatted}, ${reply.imageW}x${reply.imageH}, ${reply.fileOriginal}.${reply.fileType})|"></span>
-            </div>
-            <div class="image"  th:if="${reply.fileType} != ''">
-              <figure>
-                <a target="_blank" th:href="@{~/__${board.name}__/src/__${reply.file}__.__${reply.fileType}__}">
-                <img th:if="${reply.fileType == 'webm' or reply.fileType == 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${reply.file}__s.jpg}" th:alt="${reply.id}" class="thumb" th:height="${reply.thumbH}" th:width="${reply.thumbW}" />
-                <img th:if="${reply.fileType != 'webm' and reply.fileType != 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${reply.file}__s.__${reply.fileType}__}" th:alt="${reply.id}" class="thumb" th:height="${reply.thumbH}" th:width="${reply.thumbW}" />
-                </a>
-              </figure>
-            </div>
-            <div class="message">
-              <p th:utext="${reply.message}"></p>
-            </div>
-          </div>
-        </article>
-      </section>
+      <section th:replace="fragments/fragments :: formarea(false)"></section>
+      <form th:action="@{~/delete.php}" method="post">
+        <section class="postarea">
+          <article>
+            <div th:replace="fragments/fragments :: op(false)"></div>
+            <div th:include="fragments/fragments :: reply" class="reply" th:each="reply : ${replies}" th:id="'post' + ${reply.postId}"></div>
+          </article>
+        </section>
+        <section class="bottom">
+          <div th:replace="fragments/fragments :: deltable"></div>
+        </section>
+      </form>
     </main>
-    <nav class="navbottom">
-      <ul th:each="section : ${boardList}" th:if="${not #lists.isEmpty(section.value)}">
-        <li th:each="board : ${section.value}">
-          <a th:href="@{~/__${board.name}__}" th:text="${board.name}"></a>
-        </li>
-      </ul>
-    </nav>
-    <footer>
-      <p>asdasdasdsad <br/> asdasdasd</p>
-    </footer>
+    <nav th:replace="fragments/fragments :: navbottom"></nav>
+    <footer th:replace="fragments/fragments :: footer"></footer>
   </body>
 </html>

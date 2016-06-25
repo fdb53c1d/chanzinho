@@ -1,20 +1,63 @@
 package org.chanzinho.model;
 
-import java.sql.Date;
+import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 
+@NamedStoredProcedureQuery(name = "Post.insertPost", procedureName = "InsertPost", parameters = {
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_boardid", type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_parentid", type = Long.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_name", type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_tripcode", type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_email", type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_subject", type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_message", type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_password", type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_file", type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_file_md5", type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_file_type", type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_file_original",
+        type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_file_size", type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_file_size_formatted",
+        type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_image_w", type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_image_h", type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_thumb_w", type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_thumb_h", type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_ip", type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_ipmd5", type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_tag", type = String.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_timestamp", type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_stickied", type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_locked", type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_posterauthority",
+        type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_reviewed", type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_deleted_timestamp",
+        type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_IS_DELETED", type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.IN, name = "_bumped", type = Integer.class),
+    @StoredProcedureParameter(mode = ParameterMode.OUT, name = "id_out", type = Long.class)})
 @Entity
 @Table(name = "posts")
-public class Post {
+public class Post implements Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue
   private Long id;
+  @Column(name = "postid")
+  private Long postId;
   @Column(name = "boardid")
   private Integer boardId;
   @Column(name = "parentid")
@@ -80,6 +123,14 @@ public class Post {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public Long getPostId() {
+    return postId;
+  }
+
+  public void setPostId(Long postId) {
+    this.postId = postId;
   }
 
   public Integer getBoardId() {
@@ -314,20 +365,25 @@ public class Post {
     this.bumped = bumped;
   }
 
+  public static long getSerialversionuid() {
+    return serialVersionUID;
+  }
+
   public Date getDate() {
     return new Date((timestamp.longValue()) * 1000L);
   }
 
   @Override
   public String toString() {
-    return "Posts [id=" + id + ", boardId=" + boardId + ", parentId=" + parentId + ", name=" + name
-        + ", tripcode=" + tripcode + ", email=" + email + ", subject=" + subject + ", message="
-        + message + ", password=" + password + ", file=" + file + ", fileMd5=" + fileMd5
-        + ", fileType=" + fileType + ", fileOriginal=" + fileOriginal + ", fileSize=" + fileSize
-        + ", fileSizeFormatted=" + fileSizeFormatted + ", imageW=" + imageW + ", imageH=" + imageH
-        + ", thumbW=" + thumbW + ", thumbH=" + thumbH + ", ip=" + ip + ", ipMd5=" + ipMd5 + ", tag="
-        + tag + ", timestamp=" + timestamp + ", stickied=" + stickied + ", locked=" + locked
-        + ", posterAuthority=" + posterAuthority + ", reviewed=" + reviewed + ", deletedTimestamp="
-        + deletedTimestamp + ", isDeleted=" + isDeleted + ", bumped=" + bumped + "]";
+    return "Post [id=" + id + ", PostId=" + postId + ", boardId=" + boardId + ", parentId="
+        + parentId + ", name=" + name + ", tripcode=" + tripcode + ", email=" + email + ", subject="
+        + subject + ", message=" + message + ", password=" + password + ", file=" + file
+        + ", fileMd5=" + fileMd5 + ", fileType=" + fileType + ", fileOriginal=" + fileOriginal
+        + ", fileSize=" + fileSize + ", fileSizeFormatted=" + fileSizeFormatted + ", imageW="
+        + imageW + ", imageH=" + imageH + ", thumbW=" + thumbW + ", thumbH=" + thumbH + ", ip=" + ip
+        + ", ipMd5=" + ipMd5 + ", tag=" + tag + ", timestamp=" + timestamp + ", stickied="
+        + stickied + ", locked=" + locked + ", posterAuthority=" + posterAuthority + ", reviewed="
+        + reviewed + ", deletedTimestamp=" + deletedTimestamp + ", isDeleted=" + isDeleted
+        + ", bumped=" + bumped + "]";
   }
 }

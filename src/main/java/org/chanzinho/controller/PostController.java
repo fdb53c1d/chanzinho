@@ -2,6 +2,8 @@ package org.chanzinho.controller;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,166 +35,117 @@ public class PostController {
   @Autowired
   PostProcessor postProcessor;
 
-  @RequestMapping(value = "/board.php", method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
+  // TODO tag?, process tripcode, generate ip hash, sticky/locked, message parsing, authority,
+  // desnoko
+  @RequestMapping(value = "/board.php", method = RequestMethod.POST,
+      produces = "text/plain;charset=UTF-8")
   public String postHandler(@RequestParam("board") String boardName,
       @RequestParam("replythread") String replyThread, @RequestParam("em") String email,
       @RequestParam("name") String name, @RequestParam("subject") String subject,
       @RequestParam("message") String message, @RequestParam("postpassword") String postPassword,
-      @RequestParam("imagefile") MultipartFile imageFile, HttpServletRequest request, HttpServletResponse response) {
-    
+      @RequestParam("imagefile") MultipartFile imageFile, HttpServletRequest request,
+      HttpServletResponse response) {
+
     try {
-      postProcessor.validatePost(boardName, replyThread, email, name, subject, message, postPassword, imageFile, request);
+      postProcessor.validatePost(boardName, replyThread, email, name, subject, message,
+          postPassword, imageFile, request);
     } catch (ChanzinhoException e) {
       return e.getMessage();
     }
-    
-    Post post = new Post();
 
-    if(Integer.parseInt(replyThread) == 0) {
-      Board board = boardService.findByName(boardName);
-      post.setBoardId(board.getId());
-      Long timestamp = Instant.now().getEpochSecond();
-      post.setBumped(timestamp.intValue());
-      post.setDeletedTimestamp(0);
-      post.setEmail(email);
-      post.setFile(String.valueOf(timestamp) + String.format("%03d", new Random().nextInt(99)));
-      post.setIp(request.getRemoteAddr());
-      post.setIsDeleted(0);
-      post.setLocked(0);
-      post.setMessage(HtmlUtils.htmlEscape(message).replaceAll("\n", "<br/>"));
-      post.setName(name);
-      post.setParentId(0L);
-      post.setPassword(postPassword);
-      post.setPosterAuthority(0);
-      post.setReviewed(0);
-      post.setStickied(0);
-      post.setSubject(subject);
-      post.setTag("");
-      post.setTimestamp(timestamp.intValue());
-      post.setTripcode("");
-      post.setIpMd5("");
-      
-      try {
-        postProcessor.processFile(imageFile, board, post);
-      } catch (ChanzinhoException e) {
-        return e.getMessage();
-      }
-    }
-    
-    postService.save(post);
+    Post post = new Post();
+    Board board = boardService.findByName(boardName);
+    Long threadNum = Long.parseLong(replyThread);
+
+    post.setBoardId(board.getId());
+    post.setSubject(subject);
+    post.setName(name);
+    post.setTripcode("");
+    post.setEmail(email);
+    post.setMessage(HtmlUtils.htmlEscape(message).replaceAll("\n", "<br/>"));
+    post.setPassword(postPassword);
+    Long timestamp = Instant.now().getEpochSecond();
+    post.setBumped(timestamp.intValue());
+    post.setTimestamp(timestamp.intValue());
+    post.setDeletedTimestamp(0);
+    post.setIsDeleted(0);
+    post.setReviewed(0);
+    post.setPosterAuthority(0);
+    post.setIp(request.getRemoteAddr());
+    post.setIpMd5("");
+    post.setTag("");
+
+    post.setFile(String.valueOf(timestamp) + String.format("%03d", new Random().nextInt(99)));
+
     try {
-      response.sendRedirect("/" + boardName);
+      postProcessor.processFile(imageFile, board, post, timestamp);
+    } catch (ChanzinhoException e) {
+      return e.getMessage();
+    }
+
+    if (threadNum == 0) {
+      post.setParentId(0L);
+      post.setLocked(0);
+      post.setStickied(0);
+    }
+
+    else {
+      post.setParentId(threadNum);
+      post.setLocked(0);
+      post.setStickied(0);
+      Post parent = postService.findByBoardIdAndPostId(board.getId(), threadNum);
+      parent.setBumped(timestamp.intValue());
+      postService.save(parent);
+    }
+
+    post = postService.insertPost(post);
+
+    try {
+      if (threadNum == 0) {
+        response.sendRedirect(String.format("/%s/res/%d.html", boardName, post.getPostId()));
+      } else {
+        response.sendRedirect(String.format("/%s/res/%d.html", boardName, threadNum));
+      }
     } catch (IOException e) {
       return "Erro de redirecionamento";
     }
-      
+
     return "";
-    /*
-    
-    if (Integer.parseInt(replyThread) == 0) {
-      if (imageFile == null || imageFile.isEmpty()) {
-        return "poste uma imagem";
-      }
-      if (postPassword.equals("")) {
-        return "use uma senha";
-      }
-      post.setBoardId(boardService.findByName(board).getId());
-      Long timestamp = Instant.now().getEpochSecond();
-      post.setBumped(timestamp.intValue());
-      post.setDeletedTimestamp(0);
-      post.setEmail(email);
-      post.setFile(String.valueOf(timestamp) + String.format("%03d", new Random().nextInt(99)));
-      post.setIp(request.getRemoteAddr());
-      post.setIsDeleted(0);
-      post.setLocked(0);
-      post.setMessage(HtmlUtils.htmlEscape(message).replaceAll("\n", "<br>"));
-      post.setName(name);
-      post.setParentId(0L);
-      post.setPassword(postPassword);
-      post.setPosterAuthority(0);
-      post.setReviewed(0);
-      post.setStickied(0);
-      post.setSubject(subject);
-      post.setTag("");
-      post.setTimestamp(timestamp.intValue());
-      post.setTripcode("");
-
-      BufferedImage image;
-
-      try {
-        image = ImageIO.read(imageFile.getInputStream());
-      } catch (Exception e) {
-        e.printStackTrace();
-        return "deu errado";
-      }
-
-      post.setFileSize(new Long(imageFile.getSize()).intValue());
-      post.setFileSizeFormatted(String.valueOf(new Long(imageFile.getSize())));
-      String fileType;
-      if (imageFile.getContentType().equals("image/jpg")
-          || imageFile.getContentType().equals("image/jpeg")) {
-        fileType = "jpg";
-      } else if (imageFile.getContentType().equals("image/png")) {
-        fileType = "png";
-      } else if (imageFile.getContentType().equals("image/gif")) {
-        fileType = "gif";
-      } else {
-        return "tipo de arquivo nao suportado";
-      }
-
-      String filePath = "resources/" + board + "/src/" + post.getFile() + "." + fileType;
-      File file;
-
-      try {
-        file = new File(filePath);
-        imageFile.transferTo(file.getAbsoluteFile());
-      } catch (Exception e) {
-        e.printStackTrace();
-        return "deu erro";
-      }
-      int imageH = image.getHeight();
-      int imageW = image.getWidth();
-
-      post.setFileType(fileType);
-      post.setImageH(imageH);
-      post.setImageW(imageW);
-      post.setFileOriginal(FilenameUtils.getBaseName(imageFile.getOriginalFilename()));
-
-      ConvertCmd cmd = new ConvertCmd();
-      IMOperation op = new IMOperation();
-      op.addImage(filePath);
-      if (Math.max(imageH, imageW) <= 200) {
-        op.thumbnail(imageW, imageH);
-        post.setThumbH(imageH);
-        post.setThumbW(imageW);
-      } else {
-        int max = Math.max(imageH, imageW);
-        if (max == imageH) {
-          int width = new Double(((double) imageW) * ((double) 200.0 / imageH)).intValue();
-          op.thumbnail(width, 200);
-          post.setThumbH(200);
-          post.setThumbW(width);
-        } else {
-          int height = new Double(((double) imageH) * ((double) 200.0 / imageW)).intValue();
-          op.thumbnail(200, height);
-          post.setThumbH(height);
-          post.setThumbW(200);
-        }
-      }
-      op.addImage("resources/" + board + "/thumb/" + post.getFile() + "s." + fileType);
-      try {
-        cmd.run(op);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-
-    post.setFileMd5("");
-    post.setIpMd5("");
-    
-    postService.save(post);
-
-    return post.toString();*/
   }
 
+  @RequestMapping(value = "/delete.php", params = {"delete", "!report"},
+      method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
+  public String delete(@RequestParam(value="post", required = false) List<String> post,
+      @RequestParam(value = "delpassword", required = false) String delPassword,
+      @RequestParam(value = "board", required = false) String boardName,
+      @RequestParam(value = "fileonly", required = false) String fileOnly) {
+    
+    if (post == null) {
+      return "Selecione um post.";
+    }
+    if (delPassword == null || delPassword.trim().isEmpty()) {
+      return "Preencha o campo de senha.";
+    }
+    if (boardName == null || boardName.trim().isEmpty()) {
+      return "Faltam campos.";
+    }
+    Board board = boardService.findByName(boardName);
+    if (board == null) {
+      return "Board inválida.";
+    }
+
+    StringBuilder sb = new StringBuilder();
+    for (String s : postProcessor.deletePosts(board.getId(), post, delPassword, fileOnly)) {
+      sb.append(s);
+      sb.append("\n");
+    }
+    return sb.toString();
+  }
+
+  @RequestMapping(value = "/delete.php", params = {"!delete", "report"},
+      method = RequestMethod.POST, produces = "text/plain;charset=UTF-8")
+  public String report(@RequestParam Map<String, String> params) {
+
+    return "Vou implementar ainda";
+  }
 }

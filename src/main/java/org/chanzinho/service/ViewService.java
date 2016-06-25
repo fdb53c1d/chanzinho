@@ -36,12 +36,13 @@ public class ViewService {
       return null;
     }
 
-    model.addAttribute("maxpages", env.getProperty("chanzinho.maxpages"));
-    model.addAttribute("page", pageIndex+1);
+    int pages = postService.getPageCount(board);
+
     model.addAttribute("board", board);
-    model.addAttribute("charset", "UTF-8");
     model.addAttribute("boardList", boardList);
     model.addAttribute("ops", ops);
+    model.addAttribute("page", pageIndex + 1);
+    model.addAttribute("pages", pages);
 
     return model;
   }
@@ -52,14 +53,14 @@ public class ViewService {
     if (board == null) {
       return null;
     }
-    
+
     Map<Section, List<Board>> boardList = boardService.findBoardList();
-    Post op = postService.findOp(board.getId(), threadNum);
-    
-    if(op == null || op.getIsDeleted() == 1) {
+    Post post = postService.findOp(board.getId(), threadNum);
+
+    if (post == null || post.getIsDeleted() == 1) {
       return null;
     }
-    
+
     List<Post> replies = postService.findReplies(board.getId(), threadNum);
 
     if (replies == null) {
@@ -67,9 +68,8 @@ public class ViewService {
     }
 
     model.addAttribute("board", board);
-    model.addAttribute("charset", "UTF-8");
     model.addAttribute("boardList", boardList);
-    model.addAttribute("op", op);
+    model.addAttribute("post", post);
     model.addAttribute("replies", replies);
 
     return model;

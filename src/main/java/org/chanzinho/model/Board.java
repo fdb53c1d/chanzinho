@@ -81,218 +81,287 @@ public class Board {
   private String loadBalanceUrl;
   @Column(name = "loadbalancepassword")
   private String loadBalancePassword;
-  
+
   public Integer getId() {
     return id;
   }
+
   public void setId(Integer id) {
     this.id = id;
   }
+
   public Integer getOrder() {
     return order;
   }
+
   public void setOrder(Integer order) {
     this.order = order;
   }
+
   public String getName() {
     return name;
   }
+
   public void setName(String name) {
     this.name = name;
   }
+
   public Integer getType() {
     return type;
   }
+
   public void setType(Integer type) {
     this.type = type;
   }
+
   public Integer getStart() {
     return start;
   }
+
   public void setStart(Integer start) {
     this.start = start;
   }
+
   public Integer getUploadType() {
     return uploadType;
   }
+
   public void setUploadType(Integer uploadType) {
     this.uploadType = uploadType;
   }
+
   public String getDesc() {
     return desc;
   }
+
   public void setDesc(String desc) {
     this.desc = desc;
   }
+
   public String getImage() {
     return image;
   }
+
   public void setImage(String image) {
     this.image = image;
   }
+
   public Integer getSection() {
     return section;
   }
+
   public void setSection(Integer section) {
     this.section = section;
   }
+
   public Integer getMaxImageSize() {
     return maxImageSize;
   }
+
   public void setMaxImageSize(Integer maxImageSize) {
     this.maxImageSize = maxImageSize;
   }
+
   public Integer getMaxPages() {
     return maxPages;
   }
+
   public void setMaxPages(Integer maxPages) {
     this.maxPages = maxPages;
   }
+
   public Integer getMaxAge() {
     return maxAge;
   }
+
   public void setMaxAge(Integer maxAge) {
     this.maxAge = maxAge;
   }
+
   public Integer getMarkPage() {
     return markPage;
   }
+
   public void setMarkPage(Integer markPage) {
     this.markPage = markPage;
   }
+
   public Integer getMaxReplies() {
     return maxReplies;
   }
+
   public void setMaxReplies(Integer maxReplies) {
     this.maxReplies = maxReplies;
   }
+
   public Integer getMessageLength() {
     return messageLength;
   }
+
   public void setMessageLength(Integer messageLength) {
     this.messageLength = messageLength;
   }
+
   public Integer getCreatedOn() {
     return createdOn;
   }
+
   public void setCreatedOn(Integer createdOn) {
     this.createdOn = createdOn;
   }
+
   public Integer getLocked() {
     return locked;
   }
+
   public void setLocked(Integer locked) {
     this.locked = locked;
   }
+
   public String getIncludeHeader() {
     return includeHeader;
   }
+
   public void setIncludeHeader(String includeHeader) {
     this.includeHeader = includeHeader;
   }
+
   public Integer getRedirectToThread() {
     return redirectToThread;
   }
+
   public void setRedirectToThread(Integer redirectToThread) {
     this.redirectToThread = redirectToThread;
   }
+
   public String getAnonymous() {
     return anonymous;
   }
+
   public void setAnonymous(String anonymous) {
     this.anonymous = anonymous;
   }
+
   public Integer getForcedAnon() {
     return forcedAnon;
   }
+
   public void setForcedAnon(Integer forcedAnon) {
     this.forcedAnon = forcedAnon;
   }
+
   public String getEmbedsAllowed() {
     return embedsAllowed;
   }
+
   public void setEmbedsAllowed(String embedsAllowed) {
     this.embedsAllowed = embedsAllowed;
   }
+
   public Integer getTrial() {
     return trial;
   }
+
   public void setTrial(Integer trial) {
     this.trial = trial;
   }
+
   public Integer getPopular() {
     return popular;
   }
+
   public void setPopular(Integer popular) {
     this.popular = popular;
   }
+
   public String getDefaultStyle() {
     return defaultStyle;
   }
+
   public void setDefaultStyle(String defaultStyle) {
     this.defaultStyle = defaultStyle;
   }
+
   public String getLocale() {
     return locale;
   }
+
   public void setLocale(String locale) {
     this.locale = locale;
   }
+
   public Integer getShowId() {
     return showId;
   }
+
   public void setShowId(Integer showId) {
     this.showId = showId;
   }
+
   public Integer getCompactList() {
     return compactList;
   }
+
   public void setCompactList(Integer compactList) {
     this.compactList = compactList;
   }
+
   public Integer getEnableReporting() {
     return enableReporting;
   }
+
   public void setEnableReporting(Integer enableReporting) {
     this.enableReporting = enableReporting;
   }
+
   public Integer getEnableCaptcha() {
     return enableCaptcha;
   }
+
   public void setEnableCaptcha(Integer enableCaptcha) {
     this.enableCaptcha = enableCaptcha;
   }
+
   public Boolean getEnableNoFile() {
     return enableNoFile;
   }
+
   public void setEnableNoFile(Boolean enableNoFile) {
     this.enableNoFile = enableNoFile;
   }
+
   public Integer getEnableArchiving() {
     return enableArchiving;
   }
+
   public void setEnableArchiving(Integer enableArchiving) {
     this.enableArchiving = enableArchiving;
   }
+
   public Integer getEnableCatalog() {
     return enableCatalog;
   }
+
   public void setEnableCatalog(Integer enableCatalog) {
     this.enableCatalog = enableCatalog;
   }
+
   public String getLoadBalanceUrl() {
     return loadBalanceUrl;
   }
+
   public void setLoadBalanceUrl(String loadBalanceUrl) {
     this.loadBalanceUrl = loadBalanceUrl;
   }
+
   public String getLoadBalancePassword() {
     return loadBalancePassword;
   }
+
   public void setLoadBalancePassword(String loadBalancePassword) {
     this.loadBalancePassword = loadBalancePassword;
   }
-  
+
   @Override
   public String toString() {
     return "Board [id=" + id + ", order=" + order + ", name=" + name + ", type=" + type + ", start="

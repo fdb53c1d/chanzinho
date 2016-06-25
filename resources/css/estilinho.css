@@ -102,3 +102,9 @@ main {
 header h2 {
   margin: 5px;
 }
+
+.bottom>table {
+  border: 1px solid black;
+  background: #FAEBD7;
+  margin-left: 10px;
+}

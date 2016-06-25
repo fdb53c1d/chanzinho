@@ -106,6 +106,7 @@ header img {
 
 .deltable {
   float: right;
+  text-align: center;
 }
 
 .bottom table {
@@ -114,4 +115,19 @@ header img {
 
 .bottom {
   overflow: auto;
+}
+
+.home {
+      display: inline-block;
+    float: right;
+    margin-right: 20px;
+}
+
+.fileremoved {
+  text-align: center;
+}
+
+.fileremoved>figure {
+  border: 2px dashed black;
+  padding: 5px;
 }

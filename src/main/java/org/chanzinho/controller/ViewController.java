@@ -49,8 +49,9 @@ public class ViewController {
     model.addAttribute("postpassword", cookiePassword);
 
     File banners = new File("resources/banners");
-    model.addAttribute("banner", banners.listFiles()[new Random().nextInt(banners.listFiles().length-1)].getName());
-    
+    model.addAttribute("banner",
+        banners.listFiles()[new Random().nextInt(banners.listFiles().length - 1)].getName());
+
     return "img_index";
   }
 
@@ -68,10 +69,6 @@ public class ViewController {
       return "404";
     }
 
-    if (idx < 1 || idx > Integer.parseInt(env.getProperty("chanzinho.maxpages"))) {
-      return "404";
-    }
-
     model = viewService.getIndexModel(model, boardName, idx - 1);
 
     if (model == null) {
@@ -85,9 +82,10 @@ public class ViewController {
     }
 
     model.addAttribute("postpassword", cookiePassword);
-    
+
     File banners = new File("resources/banners");
-    model.addAttribute("banner", banners.listFiles()[new Random().nextInt(banners.listFiles().length-1)].getName());
+    model.addAttribute("banner",
+        banners.listFiles()[new Random().nextInt(banners.listFiles().length - 1)].getName());
 
     return "img_index";
   }
@@ -121,8 +119,9 @@ public class ViewController {
     model.addAttribute("postpassword", cookiePassword);
 
     File banners = new File("resources/banners");
-    model.addAttribute("banner", banners.listFiles()[new Random().nextInt(banners.listFiles().length-1)].getName());
-    
+    model.addAttribute("banner",
+        banners.listFiles()[new Random().nextInt(banners.listFiles().length - 1)].getName());
+
     return "img_thread";
   }
 }

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  
+  <nav th:fragment="navtop" class="navtop">
+    <ul th:each="section : ${boardList}" th:if="${not #lists.isEmpty(section.value)}">
+      <li th:each="board : ${section.value}">
+        <a th:href="@{~/__${board.name}__}" th:text="${board.name}"></a>
+      </li>
+    </ul>
+    <div class="home">
+      <ul>
+        <a th:href="@{~/}">Início</a>
+      </ul>
+      <ul>
+        <a th:href="@{~/}">Gerenciar</a>
+      </ul>
+    </div>
+  </nav>
+  
+  
+  <header th:fragment="header">
+    <img th:src="@{~/banners/__${banner}__}" />
+    <h2 th:text="|/${board.name}/ - ${board.desc}|"></h2>
+  </header>
+  
+  
+  <section th:fragment="formarea(isIndex)" class="formarea">
+    <form th:action="@{~/board.php}" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="board" th:value="${board.name}" />
+      <input th:if="${isIndex}" type="hidden" name="replythread" value="0" />
+      <input th:if="${!isIndex}" type="hidden" name="replythread" th:value="${post.postId}" />
+      <table class="formtable">
+        <tr>
+          <th>Nome</th>
+          <td><input type="text" name="name" size="28" maxlength="75"></input></td>
+        </tr>
+        <tr>
+          <th>Email</th>
+          <td><input type="text" name="em" size="28" maxlength="75"></input></td>
+        </tr>
+        <tr>
+          <th>Assunto</th>
+          <td><input type="text" name="subject" size="35" maxlength="75"></input>
+          <input th:if="${isIndex}" type="submit" value="Abrir Threadzinha"></input>
+          <input th:if="${!isIndex}" type="submit" value="Enviar"></input></td>
+        </tr>
+        <tr>
+          <th>Mensagem</th>
+          <td><textarea name="message" cols="48" rows="4"></textarea></td>
+        </tr>
+        <tr>
+          <th>Arquivo</th>
+          <td><input type="file" name="imagefile" size="35" accept="image/*"></input></td>
+        </tr>
+        <tr>
+          <th>Senha</th>
+          <td><input type="password" name="postpassword" th:value="${postpassword}" size="8"></input></td>
+        </tr>
+      </table>
+    </form>
+  </section>
+  
+  
+  <div th:fragment="op(isIndex)" class="op" th:id="'post' + ${post.postId}">
+    <div class="fileinfo" th:if="${post.fileType} != '' and ${post.file} != 'removed'">
+      <span th:text="'Arquivo: '"></span>
+      <a th:href="@{~/__${board.name}__/src/__${post.file}__.__${post.fileType}__}" th:text="|${post.file}.${post.fileType}|"></a>
+      <span th:text="| - (${post.fileSizeFormatted}, ${post.imageW}x${post.imageH}, ${post.fileOriginal}.${post.fileType})|"></span>
+    </div>
+    <div class="image" th:if="${post.fileType} != '' and ${post.file != 'removed'}">
+      <figure>
+        <a target="_blank" th:href="@{~/__${board.name}__/src/__${post.file}__.__${post.fileType}__}">
+        <img th:if="${post.fileType == 'webm' or post.fileType == 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${post.file}__s.jpg}" th:alt="${post.postId}" class="thumb" th:height="${post.thumbH}" th:width="${post.thumbW}" />
+        <img th:if="${post.fileType != 'webm' and post.fileType != 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${post.file}__s.__${post.fileType}__}" th:alt="${post.postId}" class="thumb" th:height="${post.thumbH}" th:width="${post.thumbW}" />
+        </a>
+      </figure>
+    </div>
+    <div class="fileremoved" th:if="${post.file} == 'removed'">
+    <figure><figcaption>
+      <p>File <br/> removed</p>
+    </figcaption></figure>
+    </div>
+    <div class="postinfo">
+      <input type="checkbox" name="post" th:value="${post.postId}"></input>
+      <span class="subject" th:text="${post.subject}"></span>
+      <span class="postername" th:if="${post.name} == ''" th:text="${board.anonymous}"></span>
+      <span class="postername" th:if="${post.name} != ''" th:text="${post.name}"></span>
+      <span class="tripcode" th:if="${post.tripcode} != ''" th:text="${post.tripcode}"></span>
+      <span class="capcode"></span>
+      <time th:text="${#calendars.format(post.getDate(), 'dd/MM/yyyy(EEE)HH:mm')}"></time>
+      <span>
+      <a th:href="@{~/__${board.name}__/res/__${post.postId}__.html#post__${post.postId}__}" th:text="No."></a>
+      <a th:href="@{~/__${board.name}__/res/__${post.postId}__.html#post__${post.postId}__}" th:text="${post.postId}"></a>
+      <a th:if="${isIndex}" th:href="@{~/__${board.name}__/res/__${post.postId}__.html}" th:text="[Responder]"></a>
+      </span>
+    </div>
+    <div class="message">
+      <p th:utext="${post.message}"></p>
+    </div>
+  </div>
+  
+  
+  <div th:fragment="reply" class="reply">
+    <div class="postinfo">
+      <input type="checkbox" name="post" th:value="${reply.postId}"></input>
+      <span class="subject" th:text="${reply.subject}"></span>
+      <span class="postername" th:if="${reply.name} == ''" th:text="${board.anonymous}"></span>
+      <span class="postername" th:if="${reply.name} != ''" th:text="${reply.name}"></span>
+      <span class="tripcode" th:if="${reply.tripcode} != ''" th:text="${reply.tripcode}"></span>
+      <span class="capcode"></span>
+      <time th:text="${#calendars.format(reply.getDate(), 'dd/MM/yyyy(EEE)HH:mm')}"></time>
+      <span>
+      <a th:href="@{~/__${board.name}__/res/__${post.postId}__.html#post__${reply.postId}__}" th:text="No."></a>
+      <a th:href="@{~/__${board.name}__/res/__${post.postId}__.html#post__${reply.postId}__}" th:text="${reply.postId}"></a>
+      </span>
+    </div>
+    <div class="fileinfo" th:if="${reply.fileMd5} != '' and ${reply.file} != 'removed'">
+      <span th:text="'Arquivo: '"></span>
+      <a th:href="@{~/__${board.name}__/src/__${reply.file}__.__${reply.fileType}__}" th:text="|${reply.file}.${reply.fileType}|"></a>
+      <span th:text="| - (${reply.fileSizeFormatted}, ${reply.imageW}x${reply.imageH}, ${reply.fileOriginal}.${reply.fileType})|"></span>
+    </div>
+    <div class="image"  th:if="${reply.fileType} != '' and ${reply.file} != 'removed'">
+      <figure>
+        <a target="_blank" th:href="@{~/__${board.name}__/src/__${reply.file}__.__${reply.fileType}__}">
+        <img th:if="${reply.fileType == 'webm' or reply.fileType == 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${reply.file}__s.jpg}" th:alt="${reply.postId}" class="thumb" th:height="${reply.thumbH}" th:width="${reply.thumbW}" />
+        <img th:if="${reply.fileType != 'webm' and reply.fileType != 'mp4'}" th:src="@{~/__${board.name}__/thumb/__${reply.file}__s.__${reply.fileType}__}" th:alt="${reply.postId}" class="thumb" th:height="${reply.thumbH}" th:width="${reply.thumbW}" />
+        </a>
+      </figure>
+    </div>
+    <div class="fileremoved" th:if="${reply.file} == 'removed'">
+    <figure><figcaption>
+      <p>File <br/> removed</p>
+    </figcaption></figure>
+    </div>
+    <div class="message">
+      <p th:utext="${reply.message}"></p>
+    </div>
+  </div>
+  
+  
+  <table th:fragment="pagelist">
+    <tr>
+      <td>
+        <a th:if="${page} &gt; 1" th:href="@{~/__${board.name}__/__${page-1}__.html}">
+        Anterior
+        </a>
+        <span th:if="${page} == 1">Anterior</span>
+      </td>
+      <td class="pagelist">
+        <ul>
+          <li th:each="i : ${#numbers.sequence(1, pages)}">
+            <a th:if="${page} != ${i}" th:href="@{~/__${board.name}__/__${i}__.html}" th:text="${i}"></a>
+            <span th:if="${page} == ${i}" th:text="${i}"></span>
+          </li>
+        </ul>
+      </td>
+      <td>
+        <a th:if="${page} &lt; ${pages}" th:href="@{~/__${board.name}__/__${page+1}__.html}">
+        Próximo
+        </a>
+        <span th:if="${page} == ${pages}">Próximo</span>
+      </td>
+      <td>Catálogo</td>
+    </tr>
+  </table>
+  
+  
+  <div th:fragment="deltable" class="deltable">
+    <table>
+    <input type="hidden" name="board" th:value="${board.name}"></input>
+      <tr>
+        <td>[<input type="checkbox" name="fileonly" value="fileonly"></input>Deletar arquivo ]
+          <input type="password" name="delpassword" size="8" th:value="${postpassword}"></input>
+          <input type="submit" name="delete" value="Deletar"></input>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Motivo: <input type="text" name="reportreason" size="10" maxlength="255"></input>
+          <input type="submit" name="report" value="Denunciar"></input>
+        </td>
+      </tr>
+    </table>
+  </div>
+  
+  
+  <nav th:fragment="navbottom" class="navbottom">
+    <ul th:each="section : ${boardList}" th:if="${not #lists.isEmpty(section.value)}">
+      <li th:each="board : ${section.value}">
+        <a th:href="@{~/__${board.name}__}" th:text="${board.name}"></a>
+      </li>
+    </ul>
+  </nav>
+  
+  
+  <footer th:fragment="footer">
+    <p>asdasdasdsad <br/> asdasdasd</p>
+  </footer>
+  
+  
+</html>

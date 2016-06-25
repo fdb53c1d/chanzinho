@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +40,16 @@ public class PostProcessor {
   @Autowired
   PostService postService;
 
+  /**
+   * <pre>
+   * Verifies the following:
+   * -post parameters (boardName, replyThread, postPassword) are not empty,
+   * -there's at least a file/message
+   * -there's a file for OP (if required)
+   * -thread and board are valid
+   * -post number is from a thread
+   * </pre>
+   */
   public void validatePost(String boardName, String replyThread, String email, String name,
       String subject, String message, String postPassword, MultipartFile imageFile,
       HttpServletRequest request) throws ChanzinhoException {
@@ -72,18 +85,40 @@ public class PostProcessor {
     }
 
     if (threadNum != 0) {
-      Post thread = postService.findById(threadNum);
+      Post thread = postService.findByBoardIdAndPostId(board.getId(), threadNum);
       if (thread.getParentId() != 0) {
         throw new ChanzinhoException("Thread inválida.");
       }
     }
   }
 
-  public Post processFile(MultipartFile multiPartFile, Board board, Post post)
+
+  /**
+   * <pre>
+   * File processing:
+   * -checks if file type is supported, then saves it on source folder
+   * -sets file parameters
+   * -generates thumbnail
+   * </pre>
+   */
+  // TODO generate hash, include thumbnail type field
+  public Post processFile(MultipartFile multiPartFile, Board board, Post post, Long timestamp)
       throws ChanzinhoException {
+
     if (multiPartFile.isEmpty()) {
+      post.setFile("");
+      post.setFileMd5("");
+      post.setFileType("");
+      post.setFileOriginal("");
+      post.setFileSize(0);
+      post.setFileSizeFormatted("");
+      post.setImageW(0);
+      post.setImageH(0);
+      post.setThumbW(0);
+      post.setThumbH(0);
       return post;
     }
+
 
     String fileType;
 
@@ -101,13 +136,6 @@ public class PostProcessor {
     } else {
       throw new ChanzinhoException("Tipo de arquivo não suportado.");
     }
-    
-    post.setFileType(fileType);
-    post.setFileOriginal(FilenameUtils.getBaseName(multiPartFile.getOriginalFilename()));    
-    
-    String filePath = "resources/" + board.getName() + "/src/" + post.getFile() + "." + fileType;
-    File file;
-    BufferedImage image;
 
     long fileSize = multiPartFile.getSize();
 
@@ -120,9 +148,15 @@ public class PostProcessor {
     String fileSizeFormatted =
         decimalFormat.format(fileSize / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
 
+    post.setFile(String.valueOf(timestamp) + String.format("%03d", new Random().nextInt(99)));
+    post.setFileType(fileType);
+    post.setFileOriginal(FilenameUtils.getBaseName(multiPartFile.getOriginalFilename()));
     post.setFileSize(new Long(fileSize).intValue());
     post.setFileSizeFormatted(fileSizeFormatted);
     
+    String filePath = "resources/" + board.getName() + "/src/" + post.getFile() + "." + fileType;
+    File file;
+
     try {
       file = new File(filePath);
       multiPartFile.transferTo(file.getAbsoluteFile());
@@ -130,9 +164,7 @@ public class PostProcessor {
       throw new ChanzinhoException("Falha ao processar arquivo: " + e.getMessage());
     }
 
-
-    if (fileType.equals("webm") || fileType.equals("mp4") || fileType.equals("flv") || fileType.equals("mkv") || fileType.equals("3gp") || fileType.equals("avi") || fileType.equals("wmv")) {
-
+    if (fileType.equals("webm") || fileType.equals("mp4")) {
       try {
         FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(file);
         grabber.start();
@@ -146,6 +178,7 @@ public class PostProcessor {
 
         IplImage thumbnail;
         Frame frameThumb;
+
 
         if (Math.max(width, height) <= 200) {
           thumbnail = IplImage.create(width, height, grabbedImage.depth(), 1);
@@ -176,6 +209,38 @@ public class PostProcessor {
         ImageIO.write(new Java2DFrameConverter().convert(frameThumb), "jpg",
             new File("resources/" + board.getName() + "/thumb/" + post.getFile() + "s.jpg"));
 
+
+        BufferedImage image = new Java2DFrameConverter().convert(grabber.grabImage());
+
+        ConvertCmd cmd = new ConvertCmd();
+        IMOperation op = new IMOperation();
+        op.addImage();
+        if (Math.max(height, width) <= 200) {
+          op.thumbnail(width, height);
+          post.setThumbH(height);
+          post.setThumbW(width);
+        } else {
+          int max = Math.max(height, width);
+          if (max == height) {
+            int thumbWidth = new Double(((double) width) * ((double) 200.0 / height)).intValue();
+            op.thumbnail(thumbWidth, 200);
+            post.setThumbH(200);
+            post.setThumbW(thumbWidth);
+          } else {
+            int thumbHeight = new Double(((double) height) * ((double) 200.0 / width)).intValue();
+            op.thumbnail(200, thumbHeight);
+            post.setThumbH(thumbHeight);
+            post.setThumbW(200);
+          }
+        }
+        op.addImage();
+        try {
+          cmd.run(op, image, "resources/" + board.getName() + "/thumb/" + post.getFile() + "s.jpg");
+        } catch (Exception e) {
+          throw new ChanzinhoException(
+              "Falha ao processar thumbnail do arquivo: " + e.getMessage());
+        }
+
       } catch (FrameGrabber.Exception e) {
         throw new ChanzinhoException("Erro ao gerar thumbnail do arquivo: " + e.getMessage());
       } catch (IOException e) {
@@ -184,6 +249,7 @@ public class PostProcessor {
     }
 
     if (fileType.equals("jpg") || fileType.equals("png") || fileType.equals("gif")) {
+      BufferedImage image;
 
       try {
         image = ImageIO.read(FileUtils.openInputStream(file));
@@ -230,8 +296,25 @@ public class PostProcessor {
       }
     }
 
-    post.setFileMd5("");
+    post.setFileMd5("asd");
 
     return post;
   }
+
+  public List<String> deletePosts(Integer boardId, List<String> postIds, String delPassword,
+      String fileOnly) {
+    List<String> ret = new ArrayList<String>();
+    for (String s : postIds) {
+      Long postId;
+      try {
+        postId = Long.parseLong(s);
+      } catch (NumberFormatException e) {
+        ret.add("Post Inválido");
+        continue;
+      }
+      ret.add(postService.deletePost(boardId, postId, delPassword, fileOnly));
+    }
+    return ret;
+  }
+
 }
